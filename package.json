@@ -1,0 +1,12 @@
+{
+  "name": "pet-application",
+  "private": true,
+  "workspaces": [
+    "frontend/web"
+  ],
+  "scripts": {
+    "install:all": "npm install --workspaces",
+    "build:frontend": "npm --workspace frontend/web run build",
+    "start:frontend": "npm --workspace frontend/web run dev"
+  }
+}
