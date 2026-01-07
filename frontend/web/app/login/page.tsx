@@ -1,41 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { loginSchema } from "@/schemas/auth.schema";
+import { ZodError } from "zod";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
+  const validateField = (field: "email" | "password", value: string) => {
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Login failed");
+      if (field === "email") {
+        loginSchema.shape.email.parse(value);
+      } else if (field === "password") {
+        loginSchema.shape.password.parse(value);
       }
-
-      router.push("/dashboard");
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
+      if (err instanceof ZodError) {
+        setErrors((prev) => ({ ...prev, [field]: err.issues[0].message }));
+      }
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl text-blue-900 mb-2 font-bold text-center">
           Welcome to Pet Application
@@ -43,28 +37,44 @@ export default function LoginPage() {
         <p className="mb-6 text-center text-blue-900">
           Connect and Share the Pawsome Moments!
         </p>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form className="space-y-4">
           <div>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => validateField("email", email)}
               required
               placeholder="Email"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.email && (
+              <span className="text-red-500 text-sm">{errors.email}</span>
+            )}
           </div>
           <div>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onBlur={() => validateField("password", password)}
               required
               placeholder="Password"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.password && (
+              <span className="text-red-500 text-sm">{errors.password}</span>
+            )}
           </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="text-right mb-4">
+            <span className="text-blue-800">
+              <Link
+                className="py-2 px-4 font-bold hover:underline hover:bg-blue-200 rounded-full"
+                href="/forgot-password">
+                Forgot Password?
+              </Link>
+            </span>
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -72,6 +82,16 @@ export default function LoginPage() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+      </div>
+      <div className="mt-8">
+        <span className="text-blue-800">
+          New to Pet Application?{" "}
+          <Link
+            className="py-2 px-4 font-bold hover:underline hover:bg-blue-200 rounded-full"
+            href="/signup">
+            Sign Up
+          </Link>
+        </span>
       </div>
     </div>
   );
