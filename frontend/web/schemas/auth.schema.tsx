@@ -1,13 +1,21 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z
+    .string()
+    .trim()
+    .nonempty("Email is required")
+    .email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
 
 export const signupSchema = z
   .object({
-    email: z.email("Invalid email address"),
+    email: z
+      .string()
+      .trim()
+      .nonempty("Email is required")
+      .email("Invalid email address"),
     password: z
       .string()
       .min(10, "Password must be at least 10 characters long")
@@ -15,7 +23,7 @@ export const signupSchema = z
       .regex(/[a-z]/, "Password must contain at least 1 lowercase letter")
       .regex(
         /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/,
-        "Password must contain at least 1 special character"
+        "Password must contain at least 1 special character",
       ),
     confirmPassword: z.string(),
   })
