@@ -10,11 +10,14 @@ def _env_to_bool(val, default=False):
         return default
     return str(val).lower() in ("1", "true", "yes", "on")
 
-# SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-please-change-this")
-
 DEBUG = _env_to_bool(os.environ.get("DEBUG"), default=True)
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",") if os.environ.get("ALLOWED_HOSTS") else []
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY is not set")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -56,29 +59,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "auth_service.wsgi.application"
 
-# Database: prefer DATABASE_URL, otherwise build from POSTGRES_* env vars
-# DATABASE_URL = os.environ.get("DATABASE_URL")
-# if DATABASE_URL:
-#     DATABASES = {
-#         "default": dj_database_url.config(
-#             default=DATABASE_URL,
-#             conn_max_age=int(os.environ.get("CONN_MAX_AGE", 600)),
-#             ssl_require=_env_to_bool(os.environ.get("DB_SSL"), default=False),
-#         )
-#     }
-# else:
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.postgresql",
-#             "NAME": os.environ.get("POSTGRES_DB", "auth_db"),
-#             "USER": os.environ.get("POSTGRES_USER", "auth_user"),
-#             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "strongpassword"),
-#             "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
-#             "PORT": os.environ.get("POSTGRES_PORT", "5432"),
-#             "CONN_MAX_AGE": int(os.environ.get("CONN_MAX_AGE", 600)),
-#             "OPTIONS": {"sslmode": "require"} if _env_to_bool(os.environ.get("DB_SSL"), default=False) else {},
-#         }
-#     }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DB"),
+        "USER": os.environ.get("POSTGRES_USER"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": os.environ.get("POSTGRES_HOST"),
+        "PORT": os.environ.get("POSTGRES_PORT"),
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

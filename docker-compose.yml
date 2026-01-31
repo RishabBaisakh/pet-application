@@ -1,14 +1,15 @@
 version: "3.9"
 
 services:
-  # db:
-  #   image: postgres:15
-  #   env_file:
-  #     - ./envs/postgres.env
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
+  db:
+    image: postgres:15
+    container_name: pet-postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 
   auth-service:
     build:
@@ -20,6 +21,10 @@ services:
       - ./backend/services/auth:/app
     environment:
       - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    depends_on:
+      - db
 
   frontend:
     build:
@@ -34,3 +39,6 @@ services:
       - NODE_ENV=development
     depends_on:
       - auth-service
+
+volumes:
+  postgres_data:
