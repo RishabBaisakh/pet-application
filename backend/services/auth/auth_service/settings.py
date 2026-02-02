@@ -1,25 +1,38 @@
 from pathlib import Path
 import os
+
 # import dj_database_url
 from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 def _env_to_bool(val, default=False):
     if val is None:
         return default
     return str(val).lower() in ("1", "true", "yes", "on")
 
+
 DEBUG = _env_to_bool(os.environ.get("DEBUG"), default=True)
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",") if os.environ.get("ALLOWED_HOSTS") else []
+ALLOWED_HOSTS = (
+    os.environ.get("ALLOWED_HOSTS", "").split(",")
+    if os.environ.get("ALLOWED_HOSTS")
+    else []
+)
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set")
 
+AUTH_USER_MODEL = "auth_service.User"
+
 INSTALLED_APPS = [
+    "auth_service.apps.AuthServiceConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -28,9 +41,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -38,6 +53,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "auth_service.middleware.camelcase_middleware.CamelCaseMiddleware",
 ]
 
 ROOT_URLCONF = "auth_service.urls"
@@ -71,7 +87,9 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -85,6 +103,7 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -93,10 +112,18 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(os.environ.get("JWT_ACCESS_MINUTES", 15))),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(os.environ.get("JWT_REFRESH_DAYS", 7))),
-    "ROTATE_REFRESH_TOKENS": _env_to_bool(os.environ.get("JWT_ROTATE_REFRESH_TOKENS"), default=True),
-    "BLACKLIST_AFTER_ROTATION": _env_to_bool(os.environ.get("JWT_BLACKLIST_AFTER_ROTATION"), default=True),
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=int(os.environ.get("JWT_ACCESS_MINUTES", 15))
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=int(os.environ.get("JWT_REFRESH_DAYS", 7))
+    ),
+    "ROTATE_REFRESH_TOKENS": _env_to_bool(
+        os.environ.get("JWT_ROTATE_REFRESH_TOKENS"), default=True
+    ),
+    "BLACKLIST_AFTER_ROTATION": _env_to_bool(
+        os.environ.get("JWT_BLACKLIST_AFTER_ROTATION"), default=True
+    ),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
@@ -106,5 +133,8 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
-    "root": {"handlers": ["console"], "level": os.environ.get("DJANGO_LOG_LEVEL", "INFO")},
+    "root": {
+        "handlers": ["console"],
+        "level": os.environ.get("DJANGO_LOG_LEVEL", "INFO"),
+    },
 }

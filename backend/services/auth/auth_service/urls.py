@@ -6,8 +6,10 @@ from django.http import JsonResponse
 from .views import RegisterView, MeView, LogoutView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+
 def health(request):
     return JsonResponse({"status": "ok"})
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),

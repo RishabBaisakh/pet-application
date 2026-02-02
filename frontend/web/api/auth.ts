@@ -1,6 +1,11 @@
-const API_BASE = "http://localhost:8000/api/auth";
+const API_BASE = `${process.env.NEXT_PUBLIC_API_HOST}`;
 
-export async function register(data) {
+export async function register(data: {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}) {
+  console.log("🚀 ~ register ~ API_BASE:", API_BASE);
   const res = await fetch(`${API_BASE}/register/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -15,7 +20,7 @@ export async function register(data) {
   return res.json();
 }
 
-export async function login(data) {
+export async function login(data: { email: string; password: string }) {
   const res = await fetch(`${API_BASE}/login/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -30,7 +35,7 @@ export async function login(data) {
   return res.json();
 }
 
-export async function me(token) {
+export async function me(token: string) {
   const res = await fetch(`${API_BASE}/me/`, {
     headers: {
       "Content-Type": "application/json",
@@ -42,7 +47,7 @@ export async function me(token) {
   return res.json();
 }
 
-export async function logout(refreshToken, accessToken) {
+export async function logout(refreshToken: string, accessToken: string) {
   const res = await fetch(`${API_BASE}/logout/`, {
     method: "POST",
     headers: {

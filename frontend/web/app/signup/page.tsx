@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { signupSchema } from "@/schemas/auth.schema";
 import { ZodError } from "zod";
+import { register } from "@/api/auth";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function SignupPage() {
 
   const validateField = (
     field: "email" | "password" | "confirmPassword",
-    value: string
+    value: string,
   ) => {
     try {
       if (field === "email") {
@@ -41,6 +42,32 @@ export default function SignupPage() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // prevent page reload
+    setLoading(true);
+
+    // Optional: validate all fields before submit
+    validateField("email", email);
+    validateField("password", password);
+    validateField("confirmPassword", confirmPassword);
+
+    if (errors.email || errors.password || errors.confirmPassword) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const data = await register({ email, password, confirmPassword });
+      console.log("User registered:", data);
+
+      // optionally redirect or show a success message
+    } catch (err) {
+      console.error("Network or server error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
@@ -50,7 +77,7 @@ export default function SignupPage() {
         <p className="mb-6 text-center text-blue-900">
           Join the Community and Start Sharing the Pawsome Moments!
         </p>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <input
               type="email"
