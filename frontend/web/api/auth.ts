@@ -1,77 +1,72 @@
-const API_BASE = `${process.env.NEXT_PUBLIC_API_HOST}`;
+import { axiosInstance } from "./axios";
+import axios from "axios";
 
 export async function register(data: {
   email: string;
   password: string;
   confirmPassword: string;
 }) {
-  console.log("🚀 ~ register ~ API_BASE:", API_BASE);
-  const res = await fetch(`${API_BASE}/register/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw err;
+  try {
+    const res = await axiosInstance.post("/register/", data);
+    return res.data;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data || { detail: "Unknown Axios error" };
+    }
+    throw { detail: "Unexpected error" };
   }
-
-  return res.json();
-}
-
-export async function refreshAccessToken() {
-  const res = await fetch(`${API_BASE}/token/refresh/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error("Token refresh failed");
-  }
-
-  return res.json();
 }
 
 export async function login(data: { email: string; password: string }) {
-  const res = await fetch(`${API_BASE}/login/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    throw err;
+  try {
+    const res = await axiosInstance.post("/login/", data);
+    return res.data; // { user, access }
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data || { detail: "Unknown Axios error" };
+    }
+    throw { detail: "Unexpected error" };
   }
-
-  return res.json();
 }
 
-export async function me(token: string) {
-  const res = await fetch(`${API_BASE}/me/`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) throw new Error("Unauthorized");
-  return res.json();
+export async function me(accessToken: string) {
+  try {
+    const res = await axiosInstance.get("/me/", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return res.data; // user object
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data || { detail: "Unauthorized" };
+    }
+    throw { detail: "Unexpected error" };
+  }
 }
 
 export async function logout(refreshToken: string, accessToken: string) {
-  const res = await fetch(`${API_BASE}/logout/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ refresh: refreshToken }),
-  });
+  try {
+    const res = await axiosInstance.post(
+      "/logout/",
+      { refresh: refreshToken },
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+    return res.data;
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data || { detail: "Logout failed" };
+    }
+    throw { detail: "Unexpected error" };
+  }
+}
 
-  if (!res.ok) throw new Error("Logout failed");
-  return res.json();
+export async function refreshAccessToken() {
+  try {
+    const res = await axiosInstance.post("/token/refresh/");
+    return res.data; // { access: "newAccessToken" }
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err)) {
+      throw err.response?.data || { detail: "Token refresh failed" };
+    }
+    throw { detail: "Unexpected error" };
+  }
 }

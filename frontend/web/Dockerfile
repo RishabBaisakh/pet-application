@@ -1,20 +1,15 @@
-# Use official Node image
+# Dockerfile inside frontend/web/
 FROM node:20-bullseye
-
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json first
+# Copy workspace package.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy app code
+# Copy frontend code
 COPY . .
 
-# Expose port
 EXPOSE 3000
-
-# Start Next.js dev server
 CMD ["npm", "run", "dev"]

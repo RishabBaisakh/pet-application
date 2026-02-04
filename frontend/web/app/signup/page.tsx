@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { signupSchema } from "@/schemas/auth.schema";
 import { ZodError } from "zod";
-import { register } from "@/api/auth";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -16,6 +16,7 @@ export default function SignupPage() {
     password?: string;
     confirmPassword?: string;
   }>({});
+  const { register } = useAuth();
 
   const validateField = (
     field: "email" | "password" | "confirmPassword",
@@ -56,10 +57,7 @@ export default function SignupPage() {
     }
 
     try {
-      const data = await register({ email, password, confirmPassword });
-      console.log("User registered:", data);
-
-      // optionally redirect or show a success message
+      await register(email, password, confirmPassword);
     } catch (err) {
       console.error("Network or server error", err);
     } finally {

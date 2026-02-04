@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { loginSchema } from "@/schemas/auth.schema";
 import { ZodError } from "zod";
-import { login } from "@/api/auth";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
+  const { login } = useAuth();
 
   const validateField = (field: "email" | "password", value: string) => {
     try {
@@ -42,9 +43,7 @@ export default function LoginPage() {
     }
 
     try {
-      console.log("Logging in with:", { email, password });
-      const data = await login({ email, password });
-      console.log("Login successful", data);
+      await login(email, password);
     } catch (err) {
       console.error("Login failed:", err);
     } finally {

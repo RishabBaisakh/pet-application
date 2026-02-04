@@ -9,7 +9,5 @@
     "build:frontend": "npm --workspace frontend/web run build",
     "start:frontend": "npm --workspace frontend/web run dev"
   },
-  "dependencies": {
-    "zod": "^4.3.5"
-  }
+  "dependencies": {}
 }

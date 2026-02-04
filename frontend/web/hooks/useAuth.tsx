@@ -13,6 +13,11 @@ interface AuthContextType {
   accessToken: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) => Promise<void>;
   refreshAccessToken: () => Promise<void>;
 }
 
@@ -25,6 +30,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Login
   const login = async (email: string, password: string) => {
     const data = await api.login({ email, password });
+    setAccessToken(data.access);
+    setUser(data.user);
+  };
+
+  const register = async (
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) => {
+    const data = await api.register({ email, password, confirmPassword });
     setAccessToken(data.access);
     setUser(data.user);
   };
@@ -70,7 +85,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [accessToken]);
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, login, logout, refreshAccessToken }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        accessToken,
+        login,
+        logout,
+        refreshAccessToken,
+        register,
+      }}>
       {children}
     </AuthContext.Provider>
   );
