@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { loginSchema } from "@/schemas/auth.schema";
 import { ZodError } from "zod";
+import { login } from "@/api/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {}
+    {},
   );
 
   const validateField = (field: "email" | "password", value: string) => {
@@ -28,6 +29,29 @@ export default function LoginPage() {
     }
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    validateField("email", email);
+    validateField("password", password);
+
+    if (errors.email || errors.password) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      console.log("Logging in with:", { email, password });
+      const data = await login({ email, password });
+      console.log("Login successful", data);
+    } catch (err) {
+      console.error("Login failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
@@ -37,7 +61,7 @@ export default function LoginPage() {
         <p className="mb-6 text-center text-blue-900">
           Connect and Share the Pawsome Moments!
         </p>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <input
               type="text"

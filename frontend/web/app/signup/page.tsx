@@ -43,10 +43,9 @@ export default function SignupPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // prevent page reload
+    e.preventDefault();
     setLoading(true);
 
-    // Optional: validate all fields before submit
     validateField("email", email);
     validateField("password", password);
     validateField("confirmPassword", confirmPassword);

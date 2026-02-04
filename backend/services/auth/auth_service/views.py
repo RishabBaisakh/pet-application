@@ -1,10 +1,41 @@
+from datetime import datetime, timedelta
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from django.contrib.auth import authenticate
+from django.utils import timezone
+from django.utils.http import http_date
 
 from .serializers import RegisterSerializer, UserSerializer
+
+
+class RefreshTokenView(APIView):
+    """
+    Refresh access token using refresh token from httpOnly cookie.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        # Read refresh token from cookie
+        refresh_token = request.COOKIES.get("refresh_token")
+        if not refresh_token:
+            return Response(
+                {"detail": "Refresh token missing"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            token = RefreshToken(refresh_token)
+            access_token = str(token.access_token)
+        except TokenError:
+            return Response(
+                {"detail": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        return Response({"access": access_token}, status=status.HTTP_200_OK)
 
 
 class MeView(APIView):
@@ -24,7 +55,6 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()  # uses custom UserManager.create_user()
 
-        # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
         access = str(refresh.access_token)
 
@@ -33,9 +63,11 @@ class RegisterView(generics.CreateAPIView):
 
         return Response(
             {
-                "user": user_data,
+                "user": {
+                    "id": str(user.id),
+                    "email": user.email,
+                },
                 "access": access,
-                "refresh": str(refresh),
             },
             status=status.HTTP_201_CREATED,
         )
@@ -54,7 +86,6 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Use custom authenticate with email
         user = authenticate(request, email=email, password=password)
         if not user:
             return Response(
@@ -62,23 +93,37 @@ class LoginView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        # Generate JWT tokens
+        user.last_login = timezone.now()
+        user.save(update_fields=["last_login"])
+
+        # Generate tokens
         refresh = RefreshToken.for_user(user)
         access = str(refresh.access_token)
 
-        return Response(
+        response = Response(
             {
                 "user": {
                     "id": str(user.id),
                     "email": user.email,
-                    "username": user.username,
-                    "role": user.role,
                 },
                 "access": access,
-                "refresh": str(refresh),
             },
             status=status.HTTP_200_OK,
         )
+
+        # Set refresh token in httpOnly cookie
+        cookie_max_age = 7 * 24 * 60 * 60  # 7 days
+        expires = datetime.utcnow() + timedelta(seconds=cookie_max_age)
+        response.set_cookie(
+            key="refresh_token",
+            value=str(refresh),
+            httponly=True,
+            secure=True,  # True in production with HTTPS
+            samesite="Strict",
+            expires=http_date(expires.timestamp()),
+        )
+
+        return response
 
 
 class LogoutView(APIView):

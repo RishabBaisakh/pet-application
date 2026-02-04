@@ -20,6 +20,21 @@ export async function register(data: {
   return res.json();
 }
 
+export async function refreshAccessToken() {
+  const res = await fetch(`${API_BASE}/token/refresh/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Token refresh failed");
+  }
+
+  return res.json();
+}
+
 export async function login(data: { email: string; password: string }) {
   const res = await fetch(`${API_BASE}/login/`, {
     method: "POST",
