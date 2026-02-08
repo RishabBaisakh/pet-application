@@ -8,6 +8,7 @@ import {
   Settings,
   MessageCircle,
   Map,
+  LogOut,
 } from "@deemlol/next-icons";
 import Link from "next/link";
 import clsx from "clsx";
@@ -31,15 +32,16 @@ export default function Sidebar() {
         width={128}
         height={128}
         className="mb-2 mx-auto rounded-full border-2 border-gray-400 shadow-lg"
+        priority
       />
       <p className="text-gray-500 text-center text-sm mb-8">@username</p>
-      <nav className="flex flex-col space-y-2">
+      <nav className="flex flex-col space-y-2 flex-1">
         {routes.map((route) => (
           <Link
             key={route.path}
             href={route.path}
             className={clsx(
-              "px-4 py-2 flex items-center gap-4 font-bold rounded-md active:scale-95 transition-transform",
+              "px-4 py-3 flex items-center gap-4 font-bold rounded-xl active:scale-95 transition-transform",
               pathname === route.path
                 ? "bg-black text-white"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-200",
@@ -48,6 +50,16 @@ export default function Sidebar() {
             {route.name}
           </Link>
         ))}
+        <Link
+          key="logout"
+          href="/logout"
+          className={clsx(
+            "px-4 py-3 flex items-center gap-4 font-bold rounded-xl active:scale-95 transition-transform mt-auto",
+            "text-gray-700 hover:text-gray-900 hover:bg-gray-200",
+          )}>
+          <LogOut size={30} />
+          Logout
+        </Link>
       </nav>
     </div>
   );
