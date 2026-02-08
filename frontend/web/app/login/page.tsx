@@ -46,7 +46,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push("/feed");
+      router.push("/feeds");
     } catch (err) {
       console.error("Login failed:", err);
     } finally {

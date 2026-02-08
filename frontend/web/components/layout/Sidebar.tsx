@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import CatPlaceholder from "@/assets/images/cat-placeholder.png";
 import {
