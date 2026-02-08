@@ -5,6 +5,7 @@ import Link from "next/link";
 import { loginSchema } from "@/schemas/auth.schema";
 import { ZodError } from "zod";
 import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function LoginPage() {
     {},
   );
   const { login } = useAuth();
+  const router = useRouter();
 
   const validateField = (field: "email" | "password", value: string) => {
     try {
@@ -44,6 +46,7 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
+      router.push("/feed");
     } catch (err) {
       console.error("Login failed:", err);
     } finally {
