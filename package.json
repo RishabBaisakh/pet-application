@@ -9,6 +9,5 @@
     "build:frontend": "npm --workspace frontend/web run build",
     "start:frontend": "npm --workspace frontend/web run dev"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
