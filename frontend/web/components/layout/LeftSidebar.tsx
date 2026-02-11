@@ -31,10 +31,11 @@ export default function Sidebar() {
         alt="Profile Logo"
         width={128}
         height={128}
-        className="mb-2 mx-auto rounded-full border-2 border-gray-400 shadow-lg"
+        className="mb-4 mx-auto rounded-full border-2 border-gray-400 shadow-lg"
         priority
       />
-      <p className="text-gray-500 text-center text-sm mb-8">@username</p>
+      <p className="text-center font-bold text-xl">Pet Name</p>
+      <p className="text-gray-500 text-center mb-8">@username</p>
       <nav className="flex flex-col space-y-2 flex-1">
         {routes.map((route) => (
           <Link
