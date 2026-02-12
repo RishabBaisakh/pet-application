@@ -26,6 +26,22 @@ services:
     depends_on:
       - db
 
+  profile-service:
+    build:
+      context: ./backend/services/profile
+    container_name: profile-service
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend/services/profile:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - auth-service
+
   frontend:
     build:
       context: ./frontend/web

@@ -12,9 +12,11 @@ export default function RightSidebar() {
     <>
       <h2 className="text-xl font-bold mb-4">Suggestions</h2>
 
-      <ul className="space-y-4">
+      <ul className="space-y-2">
         {suggestions.map((user) => (
-          <li key={user.username} className="flex items-center justify-between">
+          <li
+            key={user.username}
+            className="flex items-center justify-between rounded-lg p-3 hover:bg-gray-100 transition-colors">
             <div className="flex items-center gap-3">
               <Image
                 src={CatPlaceholder}
