@@ -1,5 +1,7 @@
-import { axiosInstance } from "./axios";
 import axios from "axios";
+import { createAPI } from "./axiosFactory";
+
+const authService = createAPI("auth");
 
 export async function register(data: {
   email: string;
@@ -7,7 +9,7 @@ export async function register(data: {
   confirmPassword: string;
 }) {
   try {
-    const res = await axiosInstance.post("/register/", data);
+    const res = await authService.post("/register/", data);
     return res.data;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
@@ -19,7 +21,7 @@ export async function register(data: {
 
 export async function login(data: { email: string; password: string }) {
   try {
-    const res = await axiosInstance.post("/login/", data);
+    const res = await authService.post("/login/", data);
     return res.data; // { user, access }
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
@@ -31,7 +33,7 @@ export async function login(data: { email: string; password: string }) {
 
 export async function me(accessToken: string) {
   try {
-    const res = await axiosInstance.get("/me/", {
+    const res = await authService.get("/me/", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     return res.data; // user object
@@ -45,7 +47,7 @@ export async function me(accessToken: string) {
 
 export async function logout(refreshToken: string, accessToken: string) {
   try {
-    const res = await axiosInstance.post(
+    const res = await authService.post(
       "/logout/",
       { refresh: refreshToken },
       { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -61,7 +63,7 @@ export async function logout(refreshToken: string, accessToken: string) {
 
 export async function refreshAccessToken() {
   try {
-    const res = await axiosInstance.post("/token/refresh/");
+    const res = await authService.post("/token/refresh/");
     return res.data; // { access: "newAccessToken" }
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {

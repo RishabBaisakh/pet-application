@@ -1,10 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from django.http import JsonResponse
-
-# ...existing code...
 from .views import RegisterView, MeView, LogoutView, LoginView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 
 def health(request):
@@ -12,7 +10,6 @@ def health(request):
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("health/", health),
     # Auth API
     path("api/auth/register/", RegisterView.as_view(), name="auth-register"),
