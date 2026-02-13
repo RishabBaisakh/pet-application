@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 const publicRoutes = ["/", "/login", "/signup"];
 
 export default function AuthGate({ children }: { children: ReactNode }) {
-  const user = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
