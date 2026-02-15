@@ -10,10 +10,18 @@ import VisibilityFilterContent from "./VisibilityFilterContent";
 
 export default function PostComposer() {
   const [visibilityDialogOpen, setVisibilityDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setVisibilityDialogOpen(false);
+    }
+  };
 
   return (
     <div className="post-composer bg-orange-50 p-4 rounded-xl mb-6">
-      <Dialog.Root>
+      <Dialog.Root open={dialogOpen} onOpenChange={handleDialogOpenChange}>
         <Dialog.Trigger asChild>
           <div>
             <div className="flex items-center rounded-full bg-white cursor-pointer shadow-md hover:bg-gray-100">

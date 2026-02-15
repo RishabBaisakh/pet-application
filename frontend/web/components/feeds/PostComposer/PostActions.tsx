@@ -1,4 +1,4 @@
-import { Smile, Image as ImageIcon, Video } from "@deemlol/next-icons";
+import Icon from "@/components/common/Icon";
 
 export default function PostActions() {
   const handleFeelingPost = (e: React.MouseEvent) => {
@@ -23,19 +23,19 @@ export default function PostActions() {
       <div
         onClick={handleFeelingPost}
         className="flex items-center gap-2 hover:bg-gray-200 rounded-md px-4 py-2 cursor-pointer">
-        <Smile className="text-gray-500" size={35} color="black" />
+        <Icon name="FaceIcon" />
         <span className="text-lg">Feeling</span>
       </div>
       <div
         onClick={handleImagePost}
         className="flex items-center gap-2 hover:bg-gray-200 rounded-md px-4 py-2 cursor-pointer">
-        <ImageIcon className="text-gray-500" size={35} color="black" />
+        <Icon name="ImageIcon" />
         <span className="text-lg">Image</span>
       </div>
       <div
         onClick={handleVideoPost}
         className="flex items-center gap-2 hover:bg-gray-200 rounded-md px-4 py-2 cursor-pointer">
-        <Video className="text-gray-500" size={35} color="black" />
+        <Icon name="VideoIcon" />
         <span className="text-lg">Video</span>
       </div>
     </div>

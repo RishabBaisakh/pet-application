@@ -2,26 +2,27 @@
 
 import Image from "next/image";
 import CatPlaceholder from "@/assets/images/cat-placeholder.png";
-import {
-  BookOpen,
-  Users,
-  Settings,
-  MessageCircle,
-  Map,
-  LogOut,
-} from "@deemlol/next-icons";
+import { LogOut } from "@deemlol/next-icons";
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
+import Icon from "@/components/common/Icon";
+import * as RadixIcons from "@radix-ui/react-icons";
+import MoreOptions from "./MoreOptions";
 
-export default function Sidebar() {
+type RouteItemType = {
+  name: string;
+  path: string;
+  icon: keyof typeof RadixIcons;
+};
+
+export default function LeftSidebar() {
   const pathname = usePathname();
-  const routes = [
-    { name: "Feeds", path: "/feeds", icon: BookOpen },
-    { name: "Friends", path: "/friends", icon: Users },
-    { name: "Messages", path: "/messages", icon: MessageCircle },
-    { name: "Explore", path: "/explore", icon: Map },
-    { name: "Settings", path: "/settings", icon: Settings },
+  const routes: RouteItemType[] = [
+    { name: "Feeds", path: "/feeds", icon: "ActivityLogIcon" },
+    { name: "Friends", path: "/profile", icon: "PersonIcon" },
+    { name: "Messages", path: "/messages", icon: "ChatBubbleIcon" },
+    { name: "Explore", path: "/explore", icon: "GlobeIcon" },
   ];
 
   return (
@@ -47,21 +48,12 @@ export default function Sidebar() {
                 ? "bg-black text-white"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-200",
             )}>
-            <route.icon size={30} />
+            <Icon name={route.icon} />
             {route.name}
           </Link>
         ))}
-        <Link
-          key="logout"
-          href="/logout"
-          className={clsx(
-            "px-4 py-3 flex items-center gap-4 font-bold rounded-xl active:scale-95 transition-transform mt-auto",
-            "text-gray-700 hover:text-gray-900 hover:bg-gray-200",
-          )}>
-          <LogOut size={30} />
-          Logout
-        </Link>
       </nav>
+      <MoreOptions />
     </div>
   );
 }
