@@ -1,6 +1,6 @@
-import { Smile } from "@deemlol/next-icons";
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import Icon from "./Icon";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
@@ -38,7 +38,7 @@ export default function EmojiPickerOverlay({
       <button
         className="cursor-pointer rounded-full hover:bg-gray-200 p-2"
         onClick={() => setEmojiPickerOpen((prev) => !prev)}>
-        <Smile size={35} />
+        <Icon name="FaceIcon" />
       </button>
 
       {emojiPickerOpen && (

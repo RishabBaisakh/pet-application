@@ -11,6 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   accessToken: string | null;
+  initialized: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   register: (
@@ -18,7 +19,6 @@ interface AuthContextType {
     password: string,
     confirmPassword: string,
   ) => Promise<void>;
-  refreshAccessToken: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,8 +26,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
 
-  // Login
   const login = async (email: string, password: string) => {
     const data = await api.login({ email, password });
     setAccessToken(data.access);
@@ -40,16 +40,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     confirmPassword: string,
   ) => {
     const data = await api.register({ email, password, confirmPassword });
-    setAccessToken(data.access);
+    setAccessToken(data.accessToken);
     setUser(data.user);
   };
 
-  // Logout
   const logout = async () => {
     if (!accessToken) return;
     try {
       // call backend to blacklist refresh token
-      await api.logout("", accessToken); // refresh token in cookie
+      await api.logout("/logout", accessToken);
     } catch (err) {
       console.error("Logout failed", err);
     } finally {
@@ -58,40 +57,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Refresh access token
-  const refreshAccessToken = async () => {
-    try {
-      // call your refresh endpoint, backend reads httpOnly cookie
-      const res = await api.refreshAccessToken?.(); // implement in api
-      setAccessToken(res.access);
-    } catch (err) {
-      console.error("Token refresh failed", err);
-      setUser(null);
-      setAccessToken(null);
-    }
-  };
-
-  // Optional: fetch current user on mount
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await api.me(accessToken!);
-        setUser(res);
-      } catch {
+        const data = await api.refreshAccessToken();
+        if (data && data.accessToken) {
+          setAccessToken(data.accessToken);
+
+          const res = await api.me(data.accessToken);
+          setUser(res);
+        } else {
+          setUser(null);
+          console.warn("No access token found during initialization");
+        }
+      } catch (err) {
         setUser(null);
+        console.error("Failed to initialize auth context", err);
+      } finally {
+        setInitialized(true);
       }
     };
-    if (accessToken) init();
-  }, [accessToken]);
+    init();
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         user,
         accessToken,
+        initialized,
         login,
         logout,
-        refreshAccessToken,
         register,
       }}>
       {children}

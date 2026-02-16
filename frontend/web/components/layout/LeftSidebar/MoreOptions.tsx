@@ -3,15 +3,18 @@
 import { useState, useRef, useEffect } from "react";
 import Icon from "@/components/common/Icon";
 import * as RadixIcons from "@radix-ui/react-icons";
+import { useAuth } from "@/hooks/useAuth";
 
 type MenuItemType = {
   label: string;
   icon: keyof typeof RadixIcons;
+  action?: () => void;
 };
 
 export default function MoreOptions() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { logout } = useAuth();
 
   // Close menu on outside click
   useEffect(() => {
@@ -25,7 +28,7 @@ export default function MoreOptions() {
   }, []);
 
   const menuItems: MenuItemType[] = [
-    { label: "Logout", icon: "ExitIcon" },
+    { label: "Logout", icon: "ExitIcon", action: logout },
     { label: "Settings", icon: "GearIcon" },
     { label: "Switch Pet Account", icon: "SwitchIcon" },
     { label: "Switch Appearance", icon: "SunIcon" },
@@ -50,7 +53,7 @@ export default function MoreOptions() {
               type="button"
               className="px-4 py-3 flex items-center gap-3 text-gray-700 hover:bg-gray-200 font-bold rounded-xl active:scale-95 transition-transform"
               onClick={() => {
-                console.log(item.label);
+                item.action?.();
                 setOpen(false);
               }}>
               <Icon name={item.icon} />

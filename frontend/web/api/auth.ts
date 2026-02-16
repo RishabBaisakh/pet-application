@@ -64,10 +64,12 @@ export async function logout(refreshToken: string, accessToken: string) {
 export async function refreshAccessToken() {
   try {
     const res = await authService.post("/token/refresh/");
-    return res.data; // { access: "newAccessToken" }
+    return res.data;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
-      throw err.response?.data || { detail: "Token refresh failed" };
+      if (err.response?.status === 401) {
+        return null;
+      }
     }
     throw { detail: "Unexpected error" };
   }

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import CatPlaceholder from "@/assets/images/cat-placeholder.png";
-import { LogOut } from "@deemlol/next-icons";
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";

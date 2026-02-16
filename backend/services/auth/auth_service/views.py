@@ -35,7 +35,7 @@ class RefreshTokenView(APIView):
                 {"detail": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED
             )
 
-        return Response({"access": access_token}, status=status.HTTP_200_OK)
+        return Response({"access_token": access_token}, status=status.HTTP_200_OK)
 
 
 class MeView(APIView):
@@ -56,18 +56,17 @@ class RegisterView(generics.CreateAPIView):
         user = serializer.save()  # uses custom UserManager.create_user()
 
         refresh = RefreshToken.for_user(user)
-        access = str(refresh.access_token)
+        access_token = str(refresh.access_token)
 
-        # Return user data
         user_data = UserSerializer(user).data
 
         return Response(
             {
                 "user": {
-                    "id": str(user.id),
-                    "email": user.email,
+                    "id": str(user_data["id"]),
+                    "email": user_data["email"],
                 },
-                "access": access,
+                "access_token": access_token,
             },
             status=status.HTTP_201_CREATED,
         )
@@ -118,8 +117,8 @@ class LoginView(APIView):
             key="refresh_token",
             value=str(refresh),
             httponly=True,
-            secure=True,  # True in production with HTTPS
-            samesite="Strict",
+            secure=True,
+            samesite="None",
             expires=http_date(expires.timestamp()),
         )
 
@@ -130,7 +129,7 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        refresh_token = request.data.get("refresh")
+        refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
             return Response(
                 {"detail": "Refresh token required"}, status=status.HTTP_400_BAD_REQUEST

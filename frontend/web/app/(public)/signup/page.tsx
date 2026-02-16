@@ -84,7 +84,9 @@ export default function SignupPage() {
               required
               placeholder="Email"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="user-email"
             />
+
             {errors.email && (
               <span className="text-red-500 text-sm">{errors.email}</span>
             )}
@@ -98,6 +100,7 @@ export default function SignupPage() {
               required
               placeholder="Password"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="new-password"
             />
             {errors.password && (
               <span className="text-red-500 text-sm">{errors.password}</span>
@@ -112,6 +115,7 @@ export default function SignupPage() {
               required
               placeholder="Confirm Password"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="new-password"
             />
             {errors.confirmPassword && (
               <span className="text-red-500 text-sm">
