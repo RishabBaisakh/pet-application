@@ -29,6 +29,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@hookform/resolvers": "^5.2.2",
+    "react-hook-form": "^7.71.1"
   }
 }

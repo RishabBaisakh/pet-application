@@ -29,9 +29,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [initialized, setInitialized] = useState(false);
 
   const login = async (email: string, password: string) => {
-    const data = await api.login({ email, password });
-    setAccessToken(data.access);
-    setUser(data.user);
+    try {
+      const data = await api.login({ email, password });
+      setAccessToken(data.access);
+      setUser(data.user);
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      console.error("Login failed", err);
+      throw new Error(error?.response?.data?.detail || "Login failed");
+    }
   };
 
   const register = async (
@@ -39,9 +45,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     password: string,
     confirmPassword: string,
   ) => {
-    const data = await api.register({ email, password, confirmPassword });
-    setAccessToken(data.accessToken);
-    setUser(data.user);
+    try {
+      await api.register({ email, password, confirmPassword });
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      console.error("Registration failed", err);
+      throw new Error(error?.response?.data?.detail || "Registration failed");
+    }
   };
 
   const logout = async () => {
