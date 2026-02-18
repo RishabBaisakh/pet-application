@@ -23,11 +23,11 @@ ALLOWED_HOSTS = (
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set")
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = "auth_service.User"
 
@@ -88,6 +88,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY"),
     "ACCESS_TOKEN_LIFETIME": timedelta(
         minutes=int(os.environ.get("JWT_ACCESS_MINUTES", 15))
     ),

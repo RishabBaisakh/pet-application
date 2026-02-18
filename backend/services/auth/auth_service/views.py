@@ -12,6 +12,12 @@ from django.utils.http import http_date
 from .serializers import RegisterSerializer, UserSerializer
 
 
+# TODO: Manage is_verified field and email verification process
+# TODO: Settings - Manage password reset process
+# TODO: Settings - Manage is_active field to allow admins to deactivate accounts without deleting them - can be implemented by adding an is_active field to User model and checking it during authentication
+# TODO: Add rate limiting to login endpoint to prevent brute-force attacks - while deployment, use nginx or cloudflare for rate limiting instead of drf throttling for better performance
+# TODO: Add account lockout after multiple failed login attempts - can be implemented using a custom field in User model to track failed attempts and lockout time, and check it during authentication
+# TODO: Add support for social authentication (Google, Facebook, etc.) - can be implemented using django-allauth or custom integration with social auth providers
 class RefreshTokenView(APIView):
     """
     Refresh access token using refresh token from httpOnly cookie.

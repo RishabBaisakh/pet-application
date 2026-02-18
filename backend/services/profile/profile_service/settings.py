@@ -12,6 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY is not set")
+
 DEBUG = _env_to_bool(os.environ.get("DEBUG"), default=False)
 
 ALLOWED_HOSTS = (
@@ -48,6 +51,11 @@ DATABASES = {
         "HOST": os.environ.get("POSTGRES_HOST"),
         "PORT": os.environ.get("POSTGRES_PORT"),
     }
+}
+
+SIMPLE_JWT = {
+    "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY"),
+    "ALGORITHM": "HS256",
 }
 
 LANGUAGE_CODE = "en-us"

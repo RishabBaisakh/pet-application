@@ -5,7 +5,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
