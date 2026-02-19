@@ -22,6 +22,8 @@ ALLOWED_HOSTS = (
 )
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
+INTERNAL_SERVICE_KEY = os.environ.get("INTERNAL_SERVICE_KEY")
+PROFILE_SERVICE_URL = os.environ.get("PROFILE_SERVICE_URL")
 
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set")

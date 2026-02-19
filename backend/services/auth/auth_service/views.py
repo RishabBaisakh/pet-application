@@ -1,4 +1,7 @@
 from datetime import datetime, timedelta
+from .services.profile_client import (
+    get_onboarding_status,
+)
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,6 +13,9 @@ from django.utils import timezone
 from django.utils.http import http_date
 
 from .serializers import RegisterSerializer, UserSerializer
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # TODO: Manage is_verified field and email verification process
@@ -101,6 +107,21 @@ class LoginView(APIView):
         user.last_login = timezone.now()
         user.save(update_fields=["last_login"])
 
+        try:
+            onboarding = get_onboarding_status(str(user.id))
+            owner_profile_completed = onboarding["owner_profile_completed"]
+            pet_profile_completed = onboarding["pet_profile_completed"]
+            profile_status_unknown = False
+        except Exception:
+            # service failure — do NOT assume no profile
+            owner_profile_completed = False
+            pet_profile_completed = False
+            profile_status_unknown = True
+            logger.warning(
+                "Failed to fetch onboarding status, marking as unknown",
+                extra={"user_id": str(user.id)},
+            )
+
         # Generate tokens
         refresh = RefreshToken.for_user(user)
         access = str(refresh.access_token)
@@ -110,6 +131,9 @@ class LoginView(APIView):
                 "user": {
                     "id": str(user.id),
                     "email": user.email,
+                    "owner_profile_completed": owner_profile_completed,
+                    "pet_profile_completed": pet_profile_completed,
+                    "profile_status_unknown": profile_status_unknown,
                 },
                 "access": access,
             },

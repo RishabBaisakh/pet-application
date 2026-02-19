@@ -11,6 +11,7 @@ def _env_to_bool(val, default=False):
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
+INTERNAL_SERVICE_KEY = os.environ.get("INTERNAL_SERVICE_KEY")
 
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set")
@@ -22,6 +23,7 @@ ALLOWED_HOSTS = (
     if os.environ.get("ALLOWED_HOSTS")
     else []
 )
+ALLOWED_HOSTS += ["profile-service"]  # Allow internal service communication
 
 INSTALLED_APPS = [
     "django.contrib.auth",

@@ -7,3 +7,4 @@ asgiref>=3.7
 sqlparse>=0.4
 django-cors-headers>=4.0
 inflection>=0.5.1
+requests==2.31.0
