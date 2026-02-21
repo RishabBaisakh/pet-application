@@ -2,7 +2,7 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import Image from "next/image";
-import ProfilePlaceholder from "@/assets/images/profile-placeholder.png";
+import OwnerPlaceholder from "@/assets/images/owner-placeholder.jpg";
 import { useState } from "react";
 import PostActions from "./PostActions";
 import CreatePostContent from "./CreatePostContent";
@@ -26,7 +26,7 @@ export default function PostComposer() {
           <div>
             <div className="flex items-center rounded-full bg-white cursor-pointer shadow-md hover:bg-gray-100">
               <Image
-                src={ProfilePlaceholder}
+                src={OwnerPlaceholder}
                 alt="Post Placeholder"
                 width={60}
                 height={60}

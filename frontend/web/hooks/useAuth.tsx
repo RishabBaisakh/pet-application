@@ -6,6 +6,9 @@ import * as api from "@/api/auth";
 interface User {
   id: string;
   email: string;
+  ownerProfileCompleted: boolean;
+  petProfileCompleted: boolean;
+  profileStatusUnknown: boolean;
 }
 
 interface AuthContextType {

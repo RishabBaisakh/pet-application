@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Dialog } from "radix-ui";
-import ProfilePlaceholder from "@/assets/images/profile-placeholder.png";
+import OwnerPlaceholder from "@/assets/images/owner-placeholder.jpg";
 import { Share2 } from "@deemlol/next-icons";
 import { useRef, useState } from "react";
 import EmojiPickerOverlay from "@/components/common/EmojiPickerOverlay";
@@ -24,7 +24,7 @@ export default function CreatePostContent({
           className="flex rounded-md hover:bg-gray-200 w-fit p-4 items-center gap-4 cursor-pointer"
           onClick={openVisibilityDialog}>
           <Image
-            src={ProfilePlaceholder}
+            src={OwnerPlaceholder}
             alt="Profile"
             width={60}
             height={60}
