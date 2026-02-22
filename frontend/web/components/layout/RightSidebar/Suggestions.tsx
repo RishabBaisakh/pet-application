@@ -1,4 +1,4 @@
-import CatPlaceholder from "@/assets/images/cat-placeholder.png";
+import PetPlaceholder from "@/assets/images/pet-placeholder.png";
 import Image from "next/image";
 
 const suggestions = [
@@ -19,7 +19,7 @@ export default function RightSidebar() {
             className="flex items-center justify-between rounded-lg p-3 hover:bg-gray-100 transition-colors">
             <div className="flex items-center gap-3">
               <Image
-                src={CatPlaceholder}
+                src={PetPlaceholder}
                 alt={user.name}
                 className="rounded-full"
                 width={45}

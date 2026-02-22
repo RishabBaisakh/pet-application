@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import ProfilePlaceholderImage from "@/assets/images/profile-placeholder.png";
 import OwnerPlaceholderImage from "@/assets/images/owner-placeholder.jpg";
 import Icon from "../common/Icon";
 
@@ -75,7 +74,10 @@ export default function CreateOwnerForm({ onSubmit }: CreateOwnerFormProps) {
 
       <div>
         <label className="block font-bold mb-1">
-          Bio <span className="text-gray-500 font-medium">(optional)</span>
+          Bio{" "}
+          <span className="text-gray-500 font-medium">
+            (optional - max 1000 characters)
+          </span>
         </label>
         <textarea
           rows={4}

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import CatPlaceholder from "@/assets/images/cat-placeholder.png";
+import PetPlaceholder from "@/assets/images/pet-placeholder.png";
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
@@ -27,7 +27,7 @@ export default function LeftSidebar() {
   return (
     <div className="sidebar flex flex-col w-80 p-8">
       <Image
-        src={CatPlaceholder}
+        src={PetPlaceholder}
         alt="Profile Logo"
         width={128}
         height={128}

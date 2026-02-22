@@ -17,6 +17,14 @@ class OwnerProfile(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
+class PetType(models.TextChoices):
+    DOG = "DOG", "Dog"
+    CAT = "CAT", "Cat"
+    RABBIT = "RAB", "Rabbit"
+    BIRD = "BRD", "Bird"
+    OTHER = "OTH", "Other"
+
+
 class PetProfile(models.Model):
     GENDER_CHOICES = [
         ("M", "Male"),
@@ -29,13 +37,19 @@ class PetProfile(models.Model):
         OwnerProfile, on_delete=models.CASCADE, related_name="pet_profiles"
     )
     name = models.CharField(max_length=30)
-    species = models.CharField(max_length=30)
+    type = models.CharField(
+        max_length=30, choices=PetType.choices, default=PetType.OTHER
+    )
     breed = models.CharField(max_length=30, blank=True)
     age = models.PositiveIntegerField()
     bio = models.TextField(blank=True, max_length=1000)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="O")
     avatar_url = models.URLField(blank=True)
-    location = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    province = models.CharField(max_length=100, blank=True)
+    country = models.CharField(max_length=2, default="CA")
+    country = models.CharField(max_length=100, blank=True)
+    province = models.CharField(max_length=2, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
