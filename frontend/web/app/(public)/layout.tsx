@@ -14,7 +14,17 @@ export default function PublicLayout({
 
   useEffect(() => {
     if (initialized && user) {
-      router.replace("/feeds");
+      if (
+        !user.profileStatusUnknown &&
+        user.ownerProfileCompleted &&
+        user.petProfileCompleted
+      ) {
+        router.replace("/feeds");
+      } else if (user.profileStatusUnknown || !user.ownerProfileCompleted) {
+        router.replace("/create-profile/owner");
+      } else {
+        router.replace("/create-profile/pet");
+      }
     }
   }, [user, initialized, router]);
 

@@ -12,8 +12,18 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await login(data.email, data.password);
-      router.push("/feeds");
+      const loginState = await login(data.email, data.password);
+      if (
+        !loginState.profileStatusUnknown &&
+        loginState.ownerProfileCompleted &&
+        loginState.petProfileCompleted
+      ) {
+        router.replace("/feeds");
+      } else if (!loginState.ownerProfileCompleted) {
+        router.replace("/create-profile/owner");
+      } else {
+        router.replace("/create-profile/pet");
+      }
     } catch (err) {
       console.error("Login failed:", err);
       // TODO: Show user-friendly error message on the UI - Form Error

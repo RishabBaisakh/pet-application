@@ -20,8 +20,10 @@ export default function ProtectedLayout({
 
     if (!user) {
       router.replace("/login");
-    } else if (!user?.petProfileCompleted && !user?.profileStatusUnknown) {
+    } else if (user.profileStatusUnknown || !user.ownerProfileCompleted) {
       router.replace("/create-profile/owner");
+    } else if (!user.petProfileCompleted) {
+      router.replace("/create-profile/pet");
     }
   }, [user, initialized, router]);
 

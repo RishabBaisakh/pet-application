@@ -15,7 +15,14 @@ interface AuthContextType {
   user: User | null;
   accessToken: string | null;
   initialized: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{
+    ownerProfileCompleted: boolean;
+    petProfileCompleted: boolean;
+    profileStatusUnknown: boolean;
+  }>;
   logout: () => Promise<void>;
   register: (
     email: string,
@@ -36,6 +43,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await api.login({ email, password });
       setAccessToken(data.access);
       setUser(data.user);
+      return {
+        ownerProfileCompleted: data.user.ownerProfileCompleted,
+        petProfileCompleted: data.user.petProfileCompleted,
+        profileStatusUnknown: data.user.profileStatusUnknown,
+      };
     } catch (err) {
       const error = err as { response?: { data?: { detail?: string } } };
       console.error("Login failed", err);

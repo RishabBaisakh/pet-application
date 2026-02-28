@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from .services.profile_client import (
     get_onboarding_status,
 )
@@ -142,7 +142,7 @@ class LoginView(APIView):
 
         # Set refresh token in httpOnly cookie
         cookie_max_age = 7 * 24 * 60 * 60  # 7 days
-        expires = datetime.utcnow() + timedelta(seconds=cookie_max_age)
+        expires = timezone.now() + timedelta(seconds=cookie_max_age)
         response.set_cookie(
             key="refresh_token",
             value=str(refresh),
