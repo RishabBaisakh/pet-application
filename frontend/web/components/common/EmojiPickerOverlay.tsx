@@ -4,11 +4,11 @@ import Icon from "./Icon";
 
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
-type EmojiPickerOverlayProps = {
+interface EmojiPickerOverlayProps {
   text: string;
   fieldRef: React.RefObject<HTMLTextAreaElement | null>;
   setText: (value: string) => void;
-};
+}
 
 export default function EmojiPickerOverlay({
   text,

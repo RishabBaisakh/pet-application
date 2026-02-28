@@ -10,8 +10,9 @@ from rest_framework.views import APIView
 
 
 # TODO: Put it in separate files if the API grows too much, for now it's manageable in a single file
+# TODO: Add Rate limiting to onboarding status endpoint to prevent abuse - can be implemented using drf throttling or nginx/cloudflare rate limiting in production
 class OnboardingStatusView(APIView):
-    permission_classes = [InternalServicePermission]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         owner_profile = OwnerProfile.objects.filter(user_id=request.user.id).first()

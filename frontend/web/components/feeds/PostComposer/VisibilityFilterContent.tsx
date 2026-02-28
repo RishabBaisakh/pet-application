@@ -5,9 +5,9 @@ import clsx from "clsx";
 
 type VisibilityOption = "public" | "friends" | "onlyMe";
 
-type VisibilityFilterContentProps = {
+interface VisibilityFilterContentProps {
   closeVisibilityDialog: () => void;
-};
+}
 
 export default function VisibilityFilterContent({
   closeVisibilityDialog,

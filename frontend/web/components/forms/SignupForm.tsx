@@ -2,9 +2,9 @@ import { SignupFormValues, signupSchema } from "@/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useForm } from "react-hook-form";
 
-type SignupFormProps = {
+interface SignupFormProps {
   onSubmit: (data: SignupFormValues) => void;
-};
+}
 
 export default function SignupForm({ onSubmit }: SignupFormProps) {
   const {

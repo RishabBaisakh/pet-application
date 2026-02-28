@@ -5,9 +5,9 @@ import { Share2 } from "@deemlol/next-icons";
 import { useRef, useState } from "react";
 import EmojiPickerOverlay from "@/components/common/EmojiPickerOverlay";
 
-type CreatePostContentProps = {
+interface CreatePostContentProps {
   openVisibilityDialog: () => void;
-};
+}
 
 export default function CreatePostContent({
   openVisibilityDialog,

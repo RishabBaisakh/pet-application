@@ -1,11 +1,11 @@
 import * as RadixIcons from "@radix-ui/react-icons";
 
-type IconProps = {
+interface IconProps {
   name: keyof typeof RadixIcons;
   size?: number;
   color?: string;
   className?: string;
-};
+}
 
 export default function Icon({
   name,

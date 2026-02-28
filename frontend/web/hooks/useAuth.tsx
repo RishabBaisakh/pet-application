@@ -1,7 +1,15 @@
 "use client";
 
-import { useState, useEffect, createContext, useContext } from "react";
+import {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import * as api from "@/api/auth";
+import { configureProfileClient } from "@/api/onboarding";
 
 interface User {
   id: string;
@@ -37,10 +45,34 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
+  const accessTokenRef = useRef<string | null>(null);
+
+  const clearAuthState = useCallback(async () => {
+    accessTokenRef.current = null;
+    setAccessToken(null);
+    setUser(null);
+  }, []);
+
+  useEffect(() => {
+    accessTokenRef.current = accessToken;
+  }, [accessToken]);
+
+  useEffect(() => {
+    api.configureAuthClient({
+      getAccessToken: () => accessTokenRef.current,
+      logout: clearAuthState,
+    });
+
+    configureProfileClient({
+      getAccessToken: () => accessTokenRef.current,
+      logout: clearAuthState,
+    });
+  }, [clearAuthState]);
 
   const login = async (email: string, password: string) => {
     try {
       const data = await api.login({ email, password });
+      accessTokenRef.current = data.access;
       setAccessToken(data.access);
       setUser(data.user);
       return {
@@ -70,15 +102,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    if (!accessToken) return;
     try {
-      // call backend to blacklist refresh token
-      await api.logout("/logout", accessToken);
+      if (accessTokenRef.current) {
+        await api.logout();
+      }
     } catch (err) {
       console.error("Logout failed", err);
     } finally {
-      setAccessToken(null);
-      setUser(null);
+      await clearAuthState();
     }
   };
 
@@ -87,23 +118,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const data = await api.refreshAccessToken();
         if (data && data.accessToken) {
+          accessTokenRef.current = data.accessToken;
           setAccessToken(data.accessToken);
 
-          const res = await api.me(data.accessToken);
+          const res = await api.me();
           setUser(res);
         } else {
-          setUser(null);
+          await clearAuthState();
           console.warn("No access token found during initialization");
         }
       } catch (err) {
-        setUser(null);
+        await clearAuthState();
         console.error("Failed to initialize auth context", err);
       } finally {
         setInitialized(true);
       }
     };
     init();
-  }, []);
+  }, [clearAuthState]);
 
   return (
     <AuthContext.Provider

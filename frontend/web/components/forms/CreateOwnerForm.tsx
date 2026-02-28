@@ -9,9 +9,9 @@ import { useForm } from "react-hook-form";
 import OwnerPlaceholderImage from "@/assets/images/owner-placeholder.jpg";
 import Icon from "../common/Icon";
 
-type CreateOwnerFormProps = {
+interface CreateOwnerFormProps {
   onSubmit: (data: OwnerProfileFormValues) => void;
-};
+}
 
 export default function CreateOwnerForm({ onSubmit }: CreateOwnerFormProps) {
   const {

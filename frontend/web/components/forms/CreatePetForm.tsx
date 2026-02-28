@@ -12,9 +12,9 @@ import PetPlaceholderImage from "@/assets/images/pet-placeholder.png";
 import { PET_TYPES } from "@/constants/pet";
 import { CANADA_PROVINCES } from "@/constants/location";
 
-type PetProfileFormProps = {
+interface PetProfileFormProps {
   onSubmit: (data: PetProfileFormValues) => void;
-};
+}
 
 export default function PetProfileForm({ onSubmit }: PetProfileFormProps) {
   const {

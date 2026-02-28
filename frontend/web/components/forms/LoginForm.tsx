@@ -3,9 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormValues, loginSchema } from "@/schemas/auth.schema";
 import Link from "next/link";
 
-type LoginFormProps = {
+interface LoginFormProps {
   onSubmit: (data: LoginFormValues) => void;
-};
+}
 
 export default function LoginForm({ onSubmit }: LoginFormProps) {
   const {

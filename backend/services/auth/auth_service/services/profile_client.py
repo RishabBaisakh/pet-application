@@ -5,6 +5,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
+# Let's decprecate this flow for a while!
 def get_onboarding_status(user_id: str) -> dict:
     url = f"{settings.PROFILE_SERVICE_URL}/api/onboarding-status/?user_id={user_id}"
     headers = {"Internal-Authorization": settings.INTERNAL_SERVICE_KEY}
