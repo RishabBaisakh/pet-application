@@ -40,6 +40,21 @@ services:
       - db
       - auth-service
 
+  media-service:
+    build:
+      context: ./backend/services/media
+    container_name: media-service
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./backend/services/media:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    depends_on:
+      - db
+
   frontend:
     build:
       context: ./frontend/web
