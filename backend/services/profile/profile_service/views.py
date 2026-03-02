@@ -1,4 +1,5 @@
 import uuid
+from django.db import IntegrityError
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import OwnerProfile, PetProfile
@@ -66,8 +67,24 @@ class InitializePetView(APIView):
         if pet_profile:
             return Response({"pet_id": str(pet_profile.id)}, status=200)
 
-        pet_profile = PetProfile.objects.create(owner_profile=owner_profile)
-        return Response({"pet_id": str(pet_profile.id)}, status=201)
+        try:
+            pet_profile = PetProfile.objects.create(owner_profile=owner_profile)
+            return Response({"pet_id": str(pet_profile.id)}, status=201)
+        except IntegrityError:
+            existing_pet_profile = PetProfile.objects.filter(
+                owner_profile=owner_profile,
+                status=STATUS_ONBOARDING,
+            ).first()
+
+            if existing_pet_profile:
+                return Response({"pet_id": str(existing_pet_profile.id)}, status=200)
+
+            return Response(
+                {
+                    "error": "Could not initialize pet profile due to a concurrent request."
+                },
+                status=409,
+            )
 
 
 class PetProfileViewSet(viewsets.ModelViewSet):

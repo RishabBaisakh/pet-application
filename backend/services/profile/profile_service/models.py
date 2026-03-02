@@ -68,3 +68,12 @@ class PetProfile(models.Model):
         max_length=10, choices=STATUS_CHOICES, default=STATUS_ONBOARDING
     )
     is_private = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["owner_profile"],
+                condition=models.Q(status=STATUS_ONBOARDING),
+                name="unique_onboarding_pet_per_owner",
+            )
+        ]
