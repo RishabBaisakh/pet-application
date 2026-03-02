@@ -23,16 +23,18 @@ ALLOWED_HOSTS = (
     if os.environ.get("ALLOWED_HOSTS")
     else []
 )
-ALLOWED_HOSTS += ["profile-service"]  # Allow internal service communication
 
 INSTALLED_APPS = [
+    "corsheaders",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "rest_framework",
     "profile_service",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -58,6 +60,16 @@ DATABASES = {
 SIMPLE_JWT = {
     "SIGNING_KEY": os.environ.get("JWT_SECRET_KEY"),
     "ALGORITHM": "HS256",
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
+    ),
 }
 
 LANGUAGE_CODE = "en-us"

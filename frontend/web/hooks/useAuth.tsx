@@ -8,7 +8,7 @@ import {
   useCallback,
   useRef,
 } from "react";
-import * as api from "@/api/auth";
+import * as authApi from "@/api/auth";
 import { configureProfileClient } from "@/api/onboarding";
 
 interface User {
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [accessToken]);
 
   useEffect(() => {
-    api.configureAuthClient({
+    authApi.configureAuthClient({
       getAccessToken: () => accessTokenRef.current,
       logout: clearAuthState,
     });
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const data = await api.login({ email, password });
+      const data = await authApi.login({ email, password });
       accessTokenRef.current = data.access;
       setAccessToken(data.access);
       setUser(data.user);
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     confirmPassword: string,
   ) => {
     try {
-      await api.register({ email, password, confirmPassword });
+      await authApi.register({ email, password, confirmPassword });
     } catch (err) {
       const error = err as { response?: { data?: { detail?: string } } };
       console.error("Registration failed", err);
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     try {
       if (accessTokenRef.current) {
-        await api.logout();
+        await authApi.logout();
       }
     } catch (err) {
       console.error("Logout failed", err);
@@ -116,12 +116,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const init = async () => {
       try {
-        const data = await api.refreshAccessToken();
-        if (data && data.accessToken) {
-          accessTokenRef.current = data.accessToken;
-          setAccessToken(data.accessToken);
+        const data = await authApi.refreshAccessToken();
+        const refreshedAccessToken = data?.accessToken;
 
-          const res = await api.me();
+        if (refreshedAccessToken) {
+          accessTokenRef.current = refreshedAccessToken;
+          setAccessToken(refreshedAccessToken);
+
+          const res = await authApi.me();
+          console.log("🚀 ~ init ~ res:", res);
           setUser(res);
         } else {
           await clearAuthState();

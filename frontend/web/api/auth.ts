@@ -37,7 +37,7 @@ export async function register(data: {
     if (axios.isAxiosError(err)) {
       throw err.response?.data || { detail: "Unknown Axios error" };
     }
-    throw { detail: "Unexpected error" };
+    throw { detail: "Unexpected error during registration", error: err };
   }
 }
 
@@ -49,7 +49,7 @@ export async function login(data: { email: string; password: string }) {
     if (axios.isAxiosError(err)) {
       throw err.response?.data || { detail: "Unknown Axios error" };
     }
-    throw { detail: "Unexpected error" };
+    throw { detail: "Unexpected error during login", error: err };
   }
 }
 
@@ -61,7 +61,7 @@ export async function me() {
     if (axios.isAxiosError(err)) {
       throw err.response?.data || { detail: "Unauthorized" };
     }
-    throw { detail: "Unexpected error" };
+    throw { detail: "Unexpected error during fetching user data", error: err };
   }
 }
 
@@ -73,7 +73,7 @@ export async function logout() {
     if (axios.isAxiosError(err)) {
       throw err.response?.data || { detail: "Logout failed" };
     }
-    throw { detail: "Unexpected error" };
+    throw { detail: "Unexpected error during logout", error: err };
   }
 }
 
@@ -87,6 +87,6 @@ export async function refreshAccessToken() {
         return null;
       }
     }
-    throw { detail: "Unexpected error" };
+    throw { detail: "Unexpected error during token refresh", error: err };
   }
 }

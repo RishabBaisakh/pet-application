@@ -3,6 +3,7 @@
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightSidebar from "@/components/layout/RightSidebar";
 import { useAuth } from "@/hooks/useAuth";
+import useOnboarding from "@/hooks/useOnboarding";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -12,6 +13,8 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const { user, initialized } = useAuth();
+  const { isOwnerOnboardingCompleted, isPetOnboardingCompleted } =
+    useOnboarding();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -20,12 +23,18 @@ export default function ProtectedLayout({
 
     if (!user) {
       router.replace("/login");
-    } else if (user.profileStatusUnknown || !user.ownerProfileCompleted) {
+    } else if (!isOwnerOnboardingCompleted) {
       router.replace("/create-profile/owner");
-    } else if (!user.petProfileCompleted) {
+    } else if (!isPetOnboardingCompleted) {
       router.replace("/create-profile/pet");
     }
-  }, [user, initialized, router]);
+  }, [
+    user,
+    initialized,
+    router,
+    isOwnerOnboardingCompleted,
+    isPetOnboardingCompleted,
+  ]);
 
   if (!initialized) {
     return (

@@ -13,12 +13,12 @@ router.register(r"owners", OwnerProfileViewSet, basename="owner")
 router.register(r"pets", PetProfileViewSet, basename="pet")
 
 urlpatterns = [
-    path("api/", include(router.urls)),
+    path("api/profile/", include(router.urls)),
     path(
-        "api/onboarding-status/",
+        "api/profile/onboarding-status/",
         OnboardingStatusView.as_view(),
         name="onboarding-status",
     ),
-    path("api/init_owner/", InitializeOwnerView.as_view()),
-    path("api/init_pet/", InitializePetView.as_view()),
+    path("api/profile/init_owner/", InitializeOwnerView.as_view()),
+    path("api/profile/init_pet/", InitializePetView.as_view()),
 ]
