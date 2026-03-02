@@ -37,15 +37,14 @@ class UploadToPath:
 upload_to_path = UploadToPath(base_folder="media")
 
 
-class MediaFile(models.Model):
-    """
-    Represents media stored in S3 with dynamic paths.
-    Handles:
-                - Owner profile images
-                - Pet profile images
-                - Other service types (account, documents)
-    """
+STATUS_CHOICES = [
+    ("pending", "Pending upload"),
+    ("active", "Confirmed / in use"),
+    ("orphaned", "Orphaned / no longer needed"),
+]
 
+
+class MediaFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     service_type = models.CharField(
         max_length=50,
@@ -57,6 +56,12 @@ class MediaFile(models.Model):
     )
     pet_id = models.UUIDField(
         blank=True, null=True, help_text="ID of the pet (optional, only for pet images)"
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="pending",
+        help_text="Upload status of the file",
     )
     file = models.FileField(upload_to=upload_to_path, help_text="File stored in S3")
     original_filename = models.CharField(max_length=255, blank=True)
@@ -73,8 +78,8 @@ class MediaFile(models.Model):
 
     def save(self, *args, **kwargs):
         # Capture original filename, content type, size
-        if self.file and not self.original_filename:
-            self.original_filename = self.file.name
+        if self.file and not self.original_filename and hasattr(self.file, "name"):
+            self.original_filename = getattr(self, "_uploaded_filename", self.file.name)
             self.size = self.file.size
             if hasattr(self.file.file, "content_type"):
                 self.content_type = self.file.file.content_type

@@ -1,6 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import OnboardingStatusView, OwnerProfileViewSet, PetProfileViewSet
+from .views import (
+    OnboardingStatusView,
+    OwnerProfileViewSet,
+    PetProfileViewSet,
+    InitializeOwnerView,
+    InitializePetView,
+)
 
 router = DefaultRouter()
 router.register(r"owners", OwnerProfileViewSet, basename="owner")
@@ -13,4 +19,6 @@ urlpatterns = [
         OnboardingStatusView.as_view(),
         name="onboarding-status",
     ),
+    path("api/init_owner/", InitializeOwnerView.as_view()),
+    path("api/init_pet/", InitializePetView.as_view()),
 ]

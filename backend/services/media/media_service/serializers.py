@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from .models import MediaFile, SERVICE_TYPES
 
 
-class MediaFileUploadSerializer(serializers.ModelSerializer):
+class MediaPresignUploadSerializer(serializers.ModelSerializer):
     # Optional pet_id
     pet_id = serializers.UUIDField(required=False, allow_null=True)
     service_type = serializers.ChoiceField(
