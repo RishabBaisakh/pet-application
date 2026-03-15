@@ -3,7 +3,11 @@ from django.db import IntegrityError
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import OwnerProfile, PetProfile
-from .serializers import OwnerProfileSerializer, PetProfileSerializer
+from .serializers import (
+    OwnerInitResponseSerializer,
+    OwnerProfileSerializer,
+    PetProfileSerializer,
+)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from constants import STATUS_ACTIVE, STATUS_ONBOARDING
@@ -37,9 +41,11 @@ class InitializeOwnerView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        owner_profile, _ = OwnerProfile.objects.get_or_create(user_id=request.user.id)
-
-        return Response({"owner_id": str(owner_profile.id)}, status=201)
+        owner_profile, created = OwnerProfile.objects.get_or_create(
+            user_id=request.user.id
+        )
+        data = OwnerInitResponseSerializer(owner_profile).data
+        return Response(data, status=201 if created else 200)
 
 
 class OwnerProfileViewSet(viewsets.ModelViewSet):

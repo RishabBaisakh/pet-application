@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import * as onboardingAPI from "@/api/onboarding";
+import * as profileApi from "@/api/profile";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function useOnboarding() {
-  const { initialized, user, accessToken } = useAuth();
+  const { initialized, user } = useAuth();
 
   const [isOwnerOnboardingCompleted, setIsOwnerOnboardingCompleted] =
     useState(false);
@@ -13,7 +13,7 @@ export default function useOnboarding() {
     useState(false);
 
   useEffect(() => {
-    if (!initialized || !user || !accessToken) {
+    if (!initialized || !user) {
       return;
     }
 
@@ -21,13 +21,12 @@ export default function useOnboarding() {
 
     const fetchOnboardingStatus = async () => {
       try {
-        const res = await onboardingAPI.getOnboardingStatus();
-        console.log("🚀 ~ fetchOnboardingStatus ~ res:", res);
+        const res = await profileApi.getOnboardingStatus();
         if (isCancelled) {
           return;
         }
 
-        setIsOwnerOnboardingCompleted(true);
+        setIsOwnerOnboardingCompleted(res.owner_profile_completed);
         setIsPetOnboardingCompleted(res.pet_profile_completed);
       } catch (err) {
         console.error("Failed to fetch onboarding status", err);
@@ -39,7 +38,7 @@ export default function useOnboarding() {
     return () => {
       isCancelled = true;
     };
-  }, [initialized, user, accessToken]);
+  }, [initialized, user]);
 
   return { isOwnerOnboardingCompleted, isPetOnboardingCompleted };
 }

@@ -6,12 +6,14 @@ from rest_framework.response import Response
 from uuid import uuid4
 
 from .models import MediaFile
+from constants import STATUS_PENDING, STATUS_ACTIVE
 
 
 class MediaPresignUploadView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        print("Received media upload request with data:", request.data)
         owner_id = request.data["owner_id"]
         pet_id = request.data.get("pet_id")
         service_type = request.data["service_type"]
@@ -24,7 +26,7 @@ class MediaPresignUploadView(APIView):
             pet_id=pet_id,
             original_filename=filename,
             content_type=content_type,
-            status="pending",
+            status=STATUS_PENDING,
         )
 
         key = media.file.field.generate_filename(media, filename)
@@ -66,7 +68,7 @@ class MediaConfirmView(APIView):
     def post(self, request, media_id):
         media = get_object_or_404(MediaFile, id=media_id)
 
-        media.status = "active"
+        media.status = STATUS_ACTIVE
         media.save(update_fields=["status"])
 
         return Response({"status": "confirmed"}, status=status.HTTP_200_OK)

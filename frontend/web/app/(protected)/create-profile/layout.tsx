@@ -1,6 +1,5 @@
 "use client";
 
-import { logout } from "@/api/auth";
 import Icon from "@/components/common/Icon";
 import ProgressBar from "@/components/common/ProgressBar";
 import { useAuth } from "@/hooks/useAuth";

@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import OwnerPlaceholderImage from "@/assets/images/owner-placeholder.jpg";
 import Icon from "../common/Icon";
+import ImageUploader from "../common/ImageUploader";
 
 interface CreateOwnerFormProps {
   onSubmit: (data: OwnerProfileFormValues) => void;
@@ -46,6 +47,7 @@ export default function CreateOwnerForm({ onSubmit }: CreateOwnerFormProps) {
           </span>
         </div>
       </div>
+      <ImageUploader serviceType="profile" />
       <div>
         <input
           type="url"

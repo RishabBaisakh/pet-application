@@ -6,9 +6,9 @@ import ImageEditor from "@uppy/image-editor";
 import AwsS3 from "@uppy/aws-s3";
 import Dashboard from "@uppy/dashboard";
 
-import "@uppy/core/dist/style.css";
-import "@uppy/dashboard/dist/style.css";
-import "@uppy/image-editor/dist/style.css";
+import "@uppy/core/css/style.css";
+import "@uppy/dashboard/css/style.css";
+import "@uppy/image-editor/css/style.css";
 
 type UppyMeta = {
   mediaId?: string;
@@ -16,14 +16,14 @@ type UppyMeta = {
 };
 
 type Props = {
-  ownerId: string;
+  // ownerId: string;
   petId?: string;
   serviceType: "profile" | "account" | "documents";
   onUploaded?: (url: string, mediaId: string) => void;
 };
 
 export default function ImageUploader({
-  ownerId,
+  // ownerId,
   petId,
   serviceType,
   onUploaded,
@@ -53,7 +53,7 @@ export default function ImageUploader({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            owner_id: ownerId,
+            // owner_id: ownerId,
             pet_id: petId,
             service_type: serviceType,
             filename: file.name,
@@ -88,7 +88,7 @@ export default function ImageUploader({
     });
 
     return u;
-  }, [ownerId, petId, serviceType, onUploaded]);
+  }, [petId, serviceType, onUploaded]);
 
   useEffect(() => {
     if (!containerRef.current) {

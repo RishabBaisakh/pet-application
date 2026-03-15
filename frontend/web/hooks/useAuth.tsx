@@ -9,7 +9,7 @@ import {
   useRef,
 } from "react";
 import * as authApi from "@/api/auth";
-import { configureProfileClient } from "@/api/onboarding";
+import { configureProfileClient } from "@/api/profile";
 
 interface User {
   id: string;
@@ -124,7 +124,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setAccessToken(refreshedAccessToken);
 
           const res = await authApi.me();
-          console.log("🚀 ~ init ~ res:", res);
           setUser(res);
         } else {
           await clearAuthState();

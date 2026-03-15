@@ -37,10 +37,10 @@ class UploadToPath:
 upload_to_path = UploadToPath(base_folder="media")
 
 
-STATUS_CHOICES = [
-    ("pending", "Pending upload"),
-    ("active", "Confirmed / in use"),
-    ("orphaned", "Orphaned / no longer needed"),
+MEDIA_STATUS_CHOICES = [
+    ("PENDING", "Pending upload"),
+    ("ACTIVE", "Confirmed / in use"),
+    ("ORPHANED", "Orphaned / no longer needed"),
 ]
 
 
