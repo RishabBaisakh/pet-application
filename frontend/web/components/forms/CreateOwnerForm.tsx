@@ -5,31 +5,53 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import Image from "next/image";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import OwnerPlaceholderImage from "@/assets/images/owner-placeholder.jpg";
 import Icon from "../common/Icon";
 import ImageUploader from "../common/ImageUploader";
 
 interface CreateOwnerFormProps {
+  ownerProfileId: number;
   onSubmit: (data: OwnerProfileFormValues) => void;
 }
 
-export default function CreateOwnerForm({ onSubmit }: CreateOwnerFormProps) {
+export default function CreateOwnerForm({
+  ownerProfileId,
+  onSubmit,
+}: CreateOwnerFormProps) {
   const {
     register,
     handleSubmit,
+    setValue,
+    control,
     formState: { isSubmitting, isValid },
   } = useForm<OwnerProfileFormValues>({
     defaultValues: {
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
       bio: "",
-      avatar_url: "",
+      avatarUrl: "",
     },
     resolver: zodResolver(ownerProfileSchema),
     mode: "onChange",
   });
 
+  const avatarUrl = useWatch({
+    control,
+    name: "avatarUrl",
+  });
+  console.log("🚀 ~ CreateOwnerForm ~ avatarUrl:", avatarUrl);
+
+  function onImageUpload(mediaUrl: string, mediaId: string) {
+    console.log("🚀 ~ onImageUpload ~ mediaUrl:", mediaUrl);
+    console.log("🚀 ~ onImageUpload ~ mediaId:", mediaId);
+
+    setValue("avatarUrl", mediaUrl, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  }
   return (
     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
       <div>
@@ -47,22 +69,26 @@ export default function CreateOwnerForm({ onSubmit }: CreateOwnerFormProps) {
           </span>
         </div>
       </div>
-      <ImageUploader serviceType="profile" />
-      <div>
+      <ImageUploader
+        serviceType="profile"
+        onUploaded={onImageUpload}
+        ownerProfileId={ownerProfileId?.toString()}
+      />
+      {/* <div>
         <input
           type="url"
-          {...register("avatar_url")}
+          {...register("avatarUrl")}
           className="w-full border rounded-lg px-3 py-2"
           aria-hidden="true"
           hidden
         />
-      </div>
+      </div> */}
       <div>
         <label className="block font-bold mb-1">First name</label>
         <input
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-required="true"
-          {...register("first_name")}
+          {...register("firstName")}
         />
       </div>
 
@@ -70,7 +96,7 @@ export default function CreateOwnerForm({ onSubmit }: CreateOwnerFormProps) {
         <label className="block font-bold mb-1">Last name</label>
         <input
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          {...register("last_name")}
+          {...register("lastName")}
         />
       </div>
 

@@ -1,11 +1,12 @@
 // lib/api.ts
 import axios, { AxiosInstance } from "axios";
 
-type Service = "auth" | "profile";
+type Service = "auth" | "profile" | "media";
 
 const API_BASES: Record<Service, string> = {
   auth: `${process.env.NEXT_PUBLIC_API_HOST_AUTH}/api/auth`,
   profile: `${process.env.NEXT_PUBLIC_API_HOST_PROFILE}/api/profile`,
+  media: `${process.env.NEXT_PUBLIC_API_HOST_MEDIA}/api/media`,
 };
 
 interface APIOptions {

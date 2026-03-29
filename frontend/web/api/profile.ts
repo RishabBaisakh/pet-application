@@ -1,4 +1,3 @@
-import { error } from "console";
 import { createAPI } from "./axiosFactory";
 
 interface ProfileClientRuntime {
@@ -49,5 +48,25 @@ export async function initializePetProfile() {
     return res.data; // pet profile Id
   } catch (err: unknown) {
     throw { detail: "Failed to initialize pet profile", error: err };
+  }
+}
+
+interface OwnerProfileData {
+  [key: string]: unknown;
+}
+
+interface OwnerProfileResponse {
+  [key: string]: unknown;
+}
+
+export async function updateOwnerProfile(
+  ownerProfileId: number,
+  data: OwnerProfileData,
+): Promise<OwnerProfileResponse> {
+  try {
+    const res = await profileService.patch(`/owner/${ownerProfileId}/`, data);
+    return res.data;
+  } catch (err: unknown) {
+    throw { detail: "Failed to update owner profile", error: err };
   }
 }

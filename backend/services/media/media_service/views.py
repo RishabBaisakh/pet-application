@@ -1,9 +1,11 @@
 import boto3
+from botocore.client import Config
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from uuid import uuid4
+from rest_framework import status
 
 from .models import MediaFile
 from constants import STATUS_PENDING, STATUS_ACTIVE
@@ -14,8 +16,8 @@ class MediaPresignUploadView(APIView):
 
     def post(self, request):
         print("Received media upload request with data:", request.data)
-        owner_id = request.data["owner_id"]
-        pet_id = request.data.get("pet_id")
+        owner_id = request.data["owner_profile_id"]
+        pet_id = request.data.get("pet_profile_id")
         service_type = request.data["service_type"]
         filename = request.data["filename"]
         content_type = request.data["content_type"]
@@ -38,6 +40,7 @@ class MediaPresignUploadView(APIView):
             region_name=settings.AWS_S3_REGION_NAME,
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
             aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            config=Config(signature_version="s3v4"),
         )
 
         upload_url = s3.generate_presigned_url(
@@ -71,4 +74,9 @@ class MediaConfirmView(APIView):
         media.status = STATUS_ACTIVE
         media.save(update_fields=["status"])
 
-        return Response({"status": "confirmed"}, status=status.HTTP_200_OK)
+        if media == None:
+            return Response(
+                {"error": "Media not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        return Response({"media": media}, status=status.HTTP_200_OK)

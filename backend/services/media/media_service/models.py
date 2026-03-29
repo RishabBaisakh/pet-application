@@ -2,12 +2,7 @@ import uuid
 from django.db import models
 from django.utils.deconstruct import deconstructible
 
-# Allowed service types
-SERVICE_TYPES = [
-    ("profile", "Profile images"),
-    ("account", "User-generated content / posts"),
-    ("documents", "PDFs, certificates, forms"),
-]
+from constants import STATUS_PENDING, STATUS_CHOICES, SERVICE_TYPES
 
 
 @deconstructible
@@ -37,19 +32,12 @@ class UploadToPath:
 upload_to_path = UploadToPath(base_folder="media")
 
 
-MEDIA_STATUS_CHOICES = [
-    ("PENDING", "Pending upload"),
-    ("ACTIVE", "Confirmed / in use"),
-    ("ORPHANED", "Orphaned / no longer needed"),
-]
-
-
 class MediaFile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     service_type = models.CharField(
         max_length=50,
         choices=SERVICE_TYPES,
-        help_text="Type/category of the media (profile, account, documents)",
+        help_text="Type/category of the media (PROFILE, ACCOUNT, DOCUMENTS)",
     )
     owner_id = models.UUIDField(
         help_text="ID of the entity (owner) that owns this file"
@@ -60,7 +48,7 @@ class MediaFile(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default="pending",
+        default=STATUS_PENDING,
         help_text="Upload status of the file",
     )
     file = models.FileField(upload_to=upload_to_path, help_text="File stored in S3")

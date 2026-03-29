@@ -40,6 +40,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "profile_service.middleware.camelcase_middleware.CamelCaseMiddleware",
 ]
 
 ROOT_URLCONF = "profile_service.urls"

@@ -7,3 +7,13 @@ STATUS_CHOICES = [
     (STATUS_ACTIVE, "Confirmed / in use"),
     (STATUS_ORPHANED, "Orphaned / no longer needed"),
 ]
+
+SERVICE_TYPE_PROFILE = "PROFILE"
+SERVICE_TYPE_ACCOUNT = "ACCOUNT"
+SERVICE_TYPE_DOCUMENTS = "DOCUMENTS"
+
+SERVICE_TYPES = [
+    (SERVICE_TYPE_PROFILE, "Profile images"),
+    (SERVICE_TYPE_ACCOUNT, "User-generated content / posts"),
+    (SERVICE_TYPE_DOCUMENTS, "PDFs, certificates, forms"),
+]

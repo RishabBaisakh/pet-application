@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Uppy from "@uppy/core";
 import ImageEditor from "@uppy/image-editor";
 import AwsS3 from "@uppy/aws-s3";
-import Dashboard from "@uppy/dashboard";
+import UppyDashboard from "@uppy/react/dashboard";
 
 import "@uppy/core/css/style.css";
 import "@uppy/dashboard/css/style.css";
 import "@uppy/image-editor/css/style.css";
+import { presignUploadUrl } from "@/api/media";
 
 type UppyMeta = {
   mediaId?: string;
@@ -16,15 +17,15 @@ type UppyMeta = {
 };
 
 type Props = {
-  // ownerId: string;
-  petId?: string;
+  ownerProfileId: string;
+  petProfileId?: string;
   serviceType: "profile" | "account" | "documents";
-  onUploaded?: (url: string, mediaId: string) => void;
+  onUploaded: (url: string, mediaId: string) => void;
 };
 
 export default function ImageUploader({
-  // ownerId,
-  petId,
+  ownerProfileId,
+  petProfileId,
   serviceType,
   onUploaded,
 }: Props) {
@@ -49,28 +50,22 @@ export default function ImageUploader({
     u.use(AwsS3, {
       shouldUseMultipart: false,
       async getUploadParameters(file) {
-        const res = await fetch("/api/media/presign-upload/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            // owner_id: ownerId,
-            pet_id: petId,
-            service_type: serviceType,
-            filename: file.name,
-            content_type: file.type,
-          }),
+        const data = await presignUploadUrl({
+          ownerProfileId: parseInt(ownerProfileId),
+          petProfileId: petProfileId ? parseInt(petProfileId) : null,
+          serviceType: serviceType,
+          filename: file.name,
+          contentType: file.type,
         });
 
-        const data = await res.json();
-
         u.setFileMeta(file.id, {
-          mediaId: data.media_id,
-          fileUrl: data.file_url,
+          mediaId: data.mediaId,
+          fileUrl: data.fileUrl,
         });
 
         return {
           method: "PUT",
-          url: data.upload_url,
+          url: data.uploadUrl,
           headers: { "Content-Type": file.type },
         };
       },
@@ -88,25 +83,29 @@ export default function ImageUploader({
     });
 
     return u;
-  }, [petId, serviceType, onUploaded]);
+  }, [ownerProfileId, petProfileId, serviceType, onUploaded]);
 
-  useEffect(() => {
-    if (!containerRef.current) {
-      return;
-    }
+  // TODO: Cleanup uppy instance on unmount to prevent memory leaks
+  // useEffect(() => {
+  //   return () => {
+  //     uppy.destroy();
+  //   };
+  // }, [uppy]);
 
-    uppy.use(Dashboard, {
-      inline: true,
-      target: containerRef.current,
-      proudlyDisplayPoweredByUppy: false,
-      height: 350,
-      note: "Images only, up to 5MB",
-    });
-
-    return () => {
-      uppy.destroy();
-    };
-  }, [uppy]);
-
-  return <div ref={containerRef} />;
+  return (
+    <div className="space-y-3">
+      <UppyDashboard
+        uppy={uppy}
+        proudlyDisplayPoweredByUppy={false}
+        height={350}
+        note="Images only, up to 5MB"
+      />
+      <button
+        type="button"
+        onClick={() => void uppy.upload()}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+        {"Upload image"}
+      </button>
+    </div>
+  );
 }

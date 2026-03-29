@@ -13,7 +13,6 @@ from rest_framework.views import APIView
 from constants import STATUS_ACTIVE, STATUS_ONBOARDING
 
 
-# TODO: Put it in separate files if the API grows too much, for now it's manageable in a single file
 # TODO: Add Rate limiting to onboarding status endpoint to prevent abuse - can be implemented using drf throttling or nginx/cloudflare rate limiting in production
 class OnboardingStatusView(APIView):
     permission_classes = [IsAuthenticated]

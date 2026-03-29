@@ -25,7 +25,7 @@ export default function OwnerProfileFormPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6">
-      <CreateOwnerForm onSubmit={onSubmit} />
+      <CreateOwnerForm onSubmit={onSubmit} ownerProfileId={ownerProfileId!} />
     </div>
   );
 }

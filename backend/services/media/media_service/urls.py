@@ -3,6 +3,6 @@ from django.urls import path
 from .views import MediaPresignUploadView, MediaConfirmView
 
 urlpatterns = [
-    path("media/presign/", MediaPresignUploadView.as_view()),
-    path("media/<uuid:media_id>/confirm/", MediaConfirmView.as_view()),
+    path("api/media/presign/", MediaPresignUploadView.as_view()),
+    path("api/media/<uuid:media_id>/confirm/", MediaConfirmView.as_view()),
 ]

@@ -10,6 +10,7 @@ import {
 } from "react";
 import * as authApi from "@/api/auth";
 import { configureProfileClient } from "@/api/profile";
+import { configureMediaClient } from "@/api/media";
 
 interface User {
   id: string;
@@ -64,6 +65,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     configureProfileClient({
+      getAccessToken: () => accessTokenRef.current,
+      logout: clearAuthState,
+    });
+
+    configureMediaClient({
       getAccessToken: () => accessTokenRef.current,
       logout: clearAuthState,
     });
