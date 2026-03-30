@@ -11,7 +11,7 @@ import Icon from "../common/Icon";
 import ImageUploader from "../common/ImageUploader";
 
 interface CreateOwnerFormProps {
-  ownerProfileId: number;
+  ownerProfileId: string;
   onSubmit: (data: OwnerProfileFormValues) => void;
 }
 
@@ -70,7 +70,7 @@ export default function CreateOwnerForm({
         </div>
       </div>
       <ImageUploader
-        serviceType="profile"
+        serviceType="PROFILE"
         onUploaded={onImageUpload}
         ownerProfileId={ownerProfileId?.toString()}
       />

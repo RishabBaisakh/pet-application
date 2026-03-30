@@ -19,7 +19,7 @@ type UppyMeta = {
 type Props = {
   ownerProfileId: string;
   petProfileId?: string;
-  serviceType: "profile" | "account" | "documents";
+  serviceType: "PROFILE" | "ACCOUNT" | "DOCUMENTS ";
   onUploaded: (url: string, mediaId: string) => void;
 };
 
@@ -29,6 +29,7 @@ export default function ImageUploader({
   serviceType,
   onUploaded,
 }: Props) {
+  console.log("🚀 ~ ImageUploader ~ ownerProfileId:", ownerProfileId);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const uppy = useMemo(() => {
@@ -51,8 +52,8 @@ export default function ImageUploader({
       shouldUseMultipart: false,
       async getUploadParameters(file) {
         const data = await presignUploadUrl({
-          ownerProfileId: parseInt(ownerProfileId),
-          petProfileId: petProfileId ? parseInt(petProfileId) : null,
+          ownerProfileId: ownerProfileId,
+          petProfileId: petProfileId || null,
           serviceType: serviceType,
           filename: file.name,
           contentType: file.type,

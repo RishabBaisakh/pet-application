@@ -1,3 +1,6 @@
+from .serializers import (
+    MediaPresignUploadSerializer,
+)
 import boto3
 from botocore.client import Config
 from django.conf import settings
@@ -13,22 +16,30 @@ from constants import STATUS_PENDING, STATUS_ACTIVE
 
 class MediaPresignUploadView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = MediaPresignUploadSerializer
 
     def post(self, request):
-        print("Received media upload request with data:", request.data)
-        owner_id = request.data["owner_profile_id"]
-        pet_id = request.data.get("pet_profile_id")
-        service_type = request.data["service_type"]
-        filename = request.data["filename"]
-        content_type = request.data["content_type"]
+        serializer = self.serializer_class(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
 
-        media = MediaFile.objects.create(
+        owner_profile_id = data["owner_profile_id"]
+        pet_profile_id = data.get("pet_profile_id")
+        service_type = data["service_type"]
+        filename = data["filename"]
+        content_type = data["content_type"]
+
+        media, _ = MediaFile.objects.update_or_create(
             service_type=service_type,
-            owner_id=owner_id,
-            pet_id=pet_id,
-            original_filename=filename,
-            content_type=content_type,
+            owner_profile_id=owner_profile_id,
+            pet_profile_id=pet_profile_id,
             status=STATUS_PENDING,
+            defaults={
+                "original_filename": filename,
+                "content_type": content_type,
+            },
         )
 
         key = media.file.field.generate_filename(media, filename)
@@ -70,13 +81,6 @@ class MediaConfirmView(APIView):
 
     def post(self, request, media_id):
         media = get_object_or_404(MediaFile, id=media_id)
-
         media.status = STATUS_ACTIVE
         media.save(update_fields=["status"])
-
-        if media == None:
-            return Response(
-                {"error": "Media not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
         return Response({"media": media}, status=status.HTTP_200_OK)

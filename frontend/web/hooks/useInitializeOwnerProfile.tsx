@@ -4,7 +4,7 @@ import * as profileApi from "@/api/profile";
 
 export function useInitializeOwnerProfile() {
   const { initialized, user } = useAuth();
-  const [ownerProfileId, setOwnerProfileId] = useState<number | null>(null);
+  const [ownerProfileId, setOwnerProfileId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(false);
 
   useEffect(() => {

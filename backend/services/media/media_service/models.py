@@ -20,12 +20,12 @@ class UploadToPath:
         new_filename = f"{uuid.uuid4()}.{ext}"
 
         # Determine subfolder: owner or pet
-        if hasattr(instance, "pet_id") and instance.pet_id:
-            subfolder = str(instance.pet_id)  # pet-level image
+        if hasattr(instance, "pet_profile_id") and instance.pet_profile_id:
+            subfolder = f"pet/{instance.pet_profile_id}"  # pet-level image
         else:
             subfolder = "owner"  # owner-level image
 
-        return f"{self.base_folder}/{instance.service_type}/{instance.owner_id}/{subfolder}/{new_filename}"
+        return f"{self.base_folder}/{instance.service_type}/{instance.owner_profile_id}/{subfolder}/{new_filename}"
 
 
 # Instantiate callable for ImageField
@@ -39,10 +39,10 @@ class MediaFile(models.Model):
         choices=SERVICE_TYPES,
         help_text="Type/category of the media (PROFILE, ACCOUNT, DOCUMENTS)",
     )
-    owner_id = models.UUIDField(
+    owner_profile_id = models.UUIDField(
         help_text="ID of the entity (owner) that owns this file"
     )
-    pet_id = models.UUIDField(
+    pet_profile_id = models.UUIDField(
         blank=True, null=True, help_text="ID of the pet (optional, only for pet images)"
     )
     status = models.CharField(
@@ -60,7 +60,7 @@ class MediaFile(models.Model):
     class Meta:
         db_table = "media_files"
         indexes = [
-            models.Index(fields=["service_type", "owner_id", "pet_id"]),
+            models.Index(fields=["service_type", "owner_profile_id", "pet_profile_id"]),
         ]
         ordering = ["-created_at"]
 
@@ -74,10 +74,8 @@ class MediaFile(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        if self.pet_id:
-            subfolder = str(self.pet_id)
+        if self.pet_profile_id:
+            subfolder = str(self.pet_profile_id)
         else:
             subfolder = "owner"
-        return (
-            f"{self.service_type}/{self.owner_id}/{subfolder}/{self.original_filename}"
-        )
+        return f"{self.service_type}/{self.owner_profile_id}/{subfolder}/{self.original_filename}"

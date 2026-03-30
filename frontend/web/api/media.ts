@@ -25,8 +25,8 @@ export const mediaService = createAPI("media", {
 });
 
 interface PresignUploadData {
-  ownerProfileId: number;
-  petProfileId: number | null;
+  ownerProfileId: string;
+  petProfileId: string | null;
   serviceType: string;
   filename: string;
   contentType: string;
