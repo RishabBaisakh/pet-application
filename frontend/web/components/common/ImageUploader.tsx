@@ -98,6 +98,7 @@ export default function ImageUploader({
       <UppyDashboard
         uppy={uppy}
         proudlyDisplayPoweredByUppy={false}
+        hideUploadButton
         height={350}
         note="Images only, up to 5MB"
       />

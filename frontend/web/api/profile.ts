@@ -1,3 +1,7 @@
+import {
+  UpdateOwnerProfileRequest,
+  UpdateOwnerProfileResponse,
+} from "@/types/api/profile";
 import { createAPI } from "./axiosFactory";
 
 interface ProfileClientRuntime {
@@ -51,18 +55,10 @@ export async function initializePetProfile() {
   }
 }
 
-interface OwnerProfileData {
-  [key: string]: unknown;
-}
-
-interface OwnerProfileResponse {
-  [key: string]: unknown;
-}
-
 export async function updateOwnerProfile(
-  ownerProfileId: number,
-  data: OwnerProfileData,
-): Promise<OwnerProfileResponse> {
+  ownerProfileId: string,
+  data: UpdateOwnerProfileRequest,
+): Promise<UpdateOwnerProfileResponse> {
   try {
     const res = await profileService.patch(`/owner/${ownerProfileId}/`, data);
     return res.data;

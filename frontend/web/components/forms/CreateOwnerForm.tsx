@@ -40,12 +40,8 @@ export default function CreateOwnerForm({
     control,
     name: "avatarUrl",
   });
-  console.log("🚀 ~ CreateOwnerForm ~ avatarUrl:", avatarUrl);
 
   function onImageUpload(mediaUrl: string, mediaId: string) {
-    console.log("🚀 ~ onImageUpload ~ mediaUrl:", mediaUrl);
-    console.log("🚀 ~ onImageUpload ~ mediaId:", mediaId);
-
     setValue("avatarUrl", mediaUrl, {
       shouldValidate: true,
       shouldDirty: true,
@@ -57,7 +53,7 @@ export default function CreateOwnerForm({
       <div>
         <div className="relative w-fit h-fit mx-auto">
           <Image
-            src={OwnerPlaceholderImage}
+            src={avatarUrl || OwnerPlaceholderImage}
             alt="Profile Logo"
             width={128}
             height={128}
@@ -74,15 +70,6 @@ export default function CreateOwnerForm({
         onUploaded={onImageUpload}
         ownerProfileId={ownerProfileId?.toString()}
       />
-      {/* <div>
-        <input
-          type="url"
-          {...register("avatarUrl")}
-          className="w-full border rounded-lg px-3 py-2"
-          aria-hidden="true"
-          hidden
-        />
-      </div> */}
       <div>
         <label className="block font-bold mb-1">First name</label>
         <input
