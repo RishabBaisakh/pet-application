@@ -11,14 +11,7 @@ export default function OwnerProfileFormPage() {
   const { ownerProfileId, isInitializing } = useInitializeOwnerProfile();
 
   async function onSubmit(data: OwnerProfileFormValues) {
-    const updatedData = await updateOwnerProfile(ownerProfileId!, {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      bio: data.bio ?? "",
-      avatarUrl: data.avatarUrl ?? "",
-    });
-    console.log("🚀 ~ onSubmit ~ updatedData:", updatedData);
-
+    const updatedData = await updateOwnerProfile(ownerProfileId!, data);
     if (!updatedData) {
       // TODO: Handle error case, e.g. show a toast notification
       console.error("Failed to update owner profile");

@@ -1,4 +1,4 @@
-import { SignupFormValues, signupSchema } from "@/schemas/auth.schema";
+import { SignupFormValues, signupSchema } from "@/schemas/auth-schema";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { useForm } from "react-hook-form";
 

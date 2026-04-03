@@ -39,6 +39,10 @@ export default function CreateProfileLayout({
       if (pathname === "/create-profile/owner") {
         router.replace("/create-profile/pet");
       }
+    } else {
+      if (pathname === "/create-profile/pet") {
+        router.replace("/create-profile/owner");
+      }
     }
   }, [isOwnerOnboardingCompleted, pathname, router, loading]);
   
@@ -70,7 +74,7 @@ export default function CreateProfileLayout({
         totalSteps={STEPS.length}
       />
       <div className="flex-1">
-        <>{children}</>
+        {children}
       </div>
     </div>
   );

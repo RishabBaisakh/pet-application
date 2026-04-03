@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LoginFormValues } from "@/schemas/auth.schema";
+import { LoginFormValues } from "@/schemas/auth-schema";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import LoginForm from "@/components/forms/LoginForm";

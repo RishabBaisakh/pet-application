@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { SignupFormValues } from "@/schemas/auth.schema";
+import { SignupFormValues } from "@/schemas/auth-schema";
 import { useAuth } from "@/hooks/useAuth";
 import SignupForm from "@/components/forms/SignupForm";
 
