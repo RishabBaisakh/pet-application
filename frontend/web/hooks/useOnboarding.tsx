@@ -11,6 +11,8 @@ export default function useOnboarding() {
     useState(false);
   const [isPetOnboardingCompleted, setIsPetOnboardingCompleted] =
     useState(false);
+  const isOnboardingCompleted = isOwnerOnboardingCompleted || isPetOnboardingCompleted;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!initialized || !user) {
@@ -26,10 +28,15 @@ export default function useOnboarding() {
           return;
         }
 
-        setIsOwnerOnboardingCompleted(res.owner_profile_completed);
-        setIsPetOnboardingCompleted(res.pet_profile_completed);
+        setIsOwnerOnboardingCompleted(res.ownerProfileCompleted);
+        setIsPetOnboardingCompleted(res.petProfileCompleted);
       } catch (err) {
+        // TODO: Show error toast
         console.error("Failed to fetch onboarding status", err);
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
@@ -40,5 +47,5 @@ export default function useOnboarding() {
     };
   }, [initialized, user]);
 
-  return { isOwnerOnboardingCompleted, isPetOnboardingCompleted };
+  return { isOwnerOnboardingCompleted, isPetOnboardingCompleted, isOnboardingCompleted, loading };
 }

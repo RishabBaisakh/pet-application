@@ -29,7 +29,6 @@ export default function ImageUploader({
   serviceType,
   onUploaded,
 }: Props) {
-  console.log("🚀 ~ ImageUploader ~ ownerProfileId:", ownerProfileId);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const uppy = useMemo(() => {

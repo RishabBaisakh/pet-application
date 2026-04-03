@@ -1,9 +1,12 @@
 "use client";
 
 import Icon from "@/components/common/Icon";
+import Loader from "@/components/common/Loader";
 import ProgressBar from "@/components/common/ProgressBar";
 import { useAuth } from "@/hooks/useAuth";
-import { usePathname } from "next/navigation";
+import useOnboarding from "@/hooks/useOnboarding";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface Step {
   key: string;
@@ -23,9 +26,26 @@ export default function CreateProfileLayout({
 }) {
   const pathname = usePathname();
   const { logout } = useAuth();
-
+  const router = useRouter();
+  const {isOwnerOnboardingCompleted, loading}= useOnboarding();
+  
   const currentStep =
     STEPS.find((step) => pathname.includes(step.pathname)) || STEPS[0];
+  
+  useEffect(() => {
+    if (loading) return;
+
+    if (isOwnerOnboardingCompleted) {
+      if (pathname === "/create-profile/owner") {
+        router.replace("/create-profile/pet");
+      }
+    }
+  }, [isOwnerOnboardingCompleted, pathname, router, loading]);
+  
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

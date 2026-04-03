@@ -1,5 +1,6 @@
 "use client";
 
+import Loader from "@/components/common/Loader";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightSidebar from "@/components/layout/RightSidebar";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,35 +14,29 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }) {
   const { user, initialized } = useAuth();
-  const { isOwnerOnboardingCompleted, isPetOnboardingCompleted } =
-    useOnboarding();
+  const { isOnboardingCompleted, loading } = useOnboarding();
+  console.log("🚀 ~ ProtectedLayout ~ isOnboardingCompleted:", isOnboardingCompleted)
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!initialized) return;
+    if (!initialized || loading) return;
 
     if (!user) {
       router.replace("/login");
-    } else if (!isOwnerOnboardingCompleted) {
+    } else if (!isOnboardingCompleted) {
       router.replace("/create-profile/owner");
-    } else if (!isPetOnboardingCompleted) {
-      router.replace("/create-profile/pet");
-    }
+    } 
   }, [
     user,
     initialized,
     router,
-    isOwnerOnboardingCompleted,
-    isPetOnboardingCompleted,
+    isOnboardingCompleted,
+    loading
   ]);
 
-  if (!initialized) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-50 z-50">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+  if (!initialized || loading) {
+    return <Loader />;
   }
 
   if (pathname.includes("/create-profile")) {

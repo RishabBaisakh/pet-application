@@ -52,6 +52,20 @@ class OwnerProfileViewSet(viewsets.ModelViewSet):
     serializer_class = OwnerProfileSerializer
     permission_classes = [IsAuthenticated]
 
+    def patch(self, request, *args, **kwargs):
+        owner_profile = self.get_object()
+        if owner_profile.user_id != request.user.id:
+            return Response(
+                {"error": "You do not have permission to edit this profile."},
+                status=403,
+            )
+
+        data = self.get_serializer(owner_profile, data=request.data, partial=True)
+        data.is_valid(raise_exception=True)
+        self.perform_update(data)
+
+        return super().patch(request, *args, **kwargs)
+
 
 class InitializePetView(APIView):
     permission_classes = [IsAuthenticated]
@@ -96,3 +110,12 @@ class PetProfileViewSet(viewsets.ModelViewSet):
     queryset = PetProfile.objects.all()
     serializer_class = PetProfileSerializer
     permission_classes = [IsAuthenticated]
+
+    def patch(self, request, *args, **kwargs):
+        pet_profile = self.get_object()
+        if pet_profile.owner_profile.user_id != request.user.id:
+            return Response(
+                {"error": "You do not have permission to edit this profile."},
+                status=403,
+            )
+        return super().patch(request, *args, **kwargs)

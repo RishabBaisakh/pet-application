@@ -20,6 +20,15 @@ class OwnerProfile(models.Model):
     def name(self):
         return f"{self.first_name} {self.last_name}"
 
+    def is_profile_complete(self):
+        required_fields = [self.first_name, self.last_name]
+        return all(required_fields)
+
+    def save(self, *args, **kwargs):
+        if self.status == STATUS_ONBOARDING and self.is_profile_complete():
+            self.status = "ACTIVE"
+        super().save(*args, **kwargs)
+
 
 class PetType(models.TextChoices):
     DOG = "DOG", "Dog"

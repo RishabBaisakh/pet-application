@@ -60,7 +60,7 @@ export async function updateOwnerProfile(
   data: UpdateOwnerProfileRequest,
 ): Promise<UpdateOwnerProfileResponse> {
   try {
-    const res = await profileService.patch(`/owner/${ownerProfileId}/`, data);
+    const res = await profileService.patch(`/owners/${ownerProfileId}/`, data);
     return res.data;
   } catch (err: unknown) {
     throw { detail: "Failed to update owner profile", error: err };
