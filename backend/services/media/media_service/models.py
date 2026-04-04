@@ -51,7 +51,9 @@ class MediaFile(models.Model):
         default=STATUS_PENDING,
         help_text="Upload status of the file",
     )
-    file = models.FileField(upload_to=upload_to_path, help_text="File stored in S3")
+    file = models.FileField(
+        upload_to=upload_to_path, max_length=512, help_text="File stored in S3"
+    )
     original_filename = models.CharField(max_length=255, blank=True)
     content_type = models.CharField(max_length=100, blank=True)
     size = models.BigIntegerField(null=True, blank=True)

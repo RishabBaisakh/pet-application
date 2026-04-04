@@ -15,7 +15,7 @@ interface CreateOwnerFormProps {
   onSubmit: (data: OwnerProfileFormValues) => void;
 }
 
-export default function CreateOwnerForm({
+export default function CreateOwnerProfileForm({
   ownerProfileId,
   onSubmit,
 }: CreateOwnerFormProps) {
@@ -29,8 +29,8 @@ export default function CreateOwnerForm({
     defaultValues: {
       firstName: "",
       lastName: "",
-      bio: "",
-      avatarUrl: "",
+      bio: undefined,
+      avatarUrl: undefined,
     },
     resolver: zodResolver(ownerProfileSchema),
     mode: "onChange",
@@ -68,7 +68,7 @@ export default function CreateOwnerForm({
       <ImageUploader
         serviceType="PROFILE"
         onUploaded={onImageUpload}
-        ownerProfileId={ownerProfileId?.toString()}
+        ownerProfileId={ownerProfileId}
       />
       <div>
         <label className="block font-bold mb-1">First name</label>

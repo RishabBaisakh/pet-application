@@ -1,11 +1,10 @@
-import uuid
-from django.db import IntegrityError
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .models import OwnerProfile, PetProfile
 from .serializers import (
     OwnerInitResponseSerializer,
     OwnerProfileSerializer,
+    PetInitResponseSerializer,
     PetProfileSerializer,
 )
 from rest_framework.response import Response
@@ -62,8 +61,6 @@ class OwnerProfileViewSet(viewsets.ModelViewSet):
 
         data = self.get_serializer(owner_profile, data=request.data, partial=True)
         data.is_valid(raise_exception=True)
-        self.perform_update(data)
-
         return super().patch(request, *args, **kwargs)
 
 
@@ -80,30 +77,11 @@ class InitializePetView(APIView):
                 status=404,
             )
 
-        pet_profile = PetProfile.objects.filter(
+        pet_profile, created = PetProfile.objects.get_or_create(
             owner_profile=owner_profile, status=STATUS_ONBOARDING
-        ).first()
-        if pet_profile:
-            return Response({"pet_id": str(pet_profile.id)}, status=200)
-
-        try:
-            pet_profile = PetProfile.objects.create(owner_profile=owner_profile)
-            return Response({"pet_id": str(pet_profile.id)}, status=201)
-        except IntegrityError:
-            existing_pet_profile = PetProfile.objects.filter(
-                owner_profile=owner_profile,
-                status=STATUS_ONBOARDING,
-            ).first()
-
-            if existing_pet_profile:
-                return Response({"pet_id": str(existing_pet_profile.id)}, status=200)
-
-            return Response(
-                {
-                    "error": "Could not initialize pet profile due to a concurrent request."
-                },
-                status=409,
-            )
+        )
+        data = PetInitResponseSerializer(pet_profile).data
+        return Response(data, status=201 if created else 200)
 
 
 class PetProfileViewSet(viewsets.ModelViewSet):
@@ -118,4 +96,7 @@ class PetProfileViewSet(viewsets.ModelViewSet):
                 {"error": "You do not have permission to edit this profile."},
                 status=403,
             )
+
+        data = self.get_serializer(pet_profile, data=request.data, partial=True)
+        data.is_valid(raise_exception=True)
         return super().patch(request, *args, **kwargs)

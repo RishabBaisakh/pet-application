@@ -11,15 +11,21 @@ import Icon from "../common/Icon";
 import PetPlaceholderImage from "@/assets/images/pet-placeholder.png";
 import { PET_TYPES } from "@/constants/pet";
 import { CANADA_PROVINCES } from "@/constants/location";
+import ImageUploader from "../common/ImageUploader";
 
 interface PetProfileFormProps {
+  petProfileId: string;
+  ownerProfileId: string;
   onSubmit: (data: PetProfileFormValues) => void;
 }
 
-export default function PetProfileForm({ onSubmit }: PetProfileFormProps) {
+export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onSubmit }: PetProfileFormProps) {
+  console.log("🚀 ~ CreatePetProfileForm ~ ownerProfileId:", ownerProfileId)
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { isSubmitting, isValid },
   } = useForm<PetProfileFormValues>({
     resolver: zodResolver(petProfileSchema),
@@ -27,14 +33,24 @@ export default function PetProfileForm({ onSubmit }: PetProfileFormProps) {
     defaultValues: {
       name: "",
       type: "Dog",
-      breed: "",
+      breed: undefined,
       age: undefined,
-      bio: "",
-      avatar_file: undefined,
-      city: "",
-      province: "",
+      bio: undefined,
+      avatarUrl: undefined,
+      city: undefined,
+      province: undefined,
     },
   });
+
+  const avatarUrl = watch("avatarUrl");
+
+  const onImageUpload = (mediaUrl: string, mediaId: string) => {
+    setValue("avatarUrl", mediaUrl, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  }
 
   return (
     <form
@@ -43,7 +59,7 @@ export default function PetProfileForm({ onSubmit }: PetProfileFormProps) {
       <div>
         <div className="relative w-fit h-fit mx-auto">
           <Image
-            src={PetPlaceholderImage}
+            src={avatarUrl || PetPlaceholderImage}
             alt="Profile Logo"
             width={128}
             height={128}
@@ -55,6 +71,12 @@ export default function PetProfileForm({ onSubmit }: PetProfileFormProps) {
           </span>
         </div>
       </div>
+      <ImageUploader
+        serviceType="PROFILE"
+        onUploaded={onImageUpload}
+        ownerProfileId={ownerProfileId}
+        petProfileId={petProfileId}
+      />
       <div>
         <label className="block font-bold mb-1">Name</label>
         <input
@@ -77,6 +99,15 @@ export default function PetProfileForm({ onSubmit }: PetProfileFormProps) {
         </select>
       </div>
 
+      <div>
+        <label className="block font-bold mb-1">Breed</label>
+        <input
+          type="text"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          {...register("breed")}
+        />
+      </div>
+      
       <div>
         <label className="block font-bold mb-1">Age</label>
         <input

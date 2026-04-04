@@ -31,6 +31,7 @@ class PetProfileSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "age",
+            "type",
             "breed",
             "bio",
             "avatar_url",
@@ -39,3 +40,9 @@ class PetProfileSerializer(serializers.ModelSerializer):
             "updated_at",
         )
         read_only_fields = ("id", "owner_profile", "status", "created_at", "updated_at")
+
+
+class PetInitResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PetProfile
+        fields = ("id", "owner_profile_id", "status")

@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useAuth } from "./useAuth";
 import * as profileApi from "@/api/profile";
 
-export function useInitializeOwnerProfile() {
+export function useInitializePetProfile() {
   const { initialized, user } = useAuth();
   const [ownerProfileId, setOwnerProfileId] = useState<string | null>(null);
+  const [petProfileId, setPetProfileId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,17 +17,18 @@ export function useInitializeOwnerProfile() {
 
     const initialize = async () => {
       try {
-        const response = await profileApi.initializeOwnerProfile();
+        const response = await profileApi.initializePetProfile();
         if (isCancelled) {
           return;
         }
 
-        setOwnerProfileId(response.id);
+        setPetProfileId(response.id);
+        setOwnerProfileId(response.ownerProfileId);
       } catch (err) {
         if (isCancelled) {
           return;
         }
-        console.error("Failed to initialize owner profile", err);
+        console.error("Failed to initialize pet profile", err);
       } finally {
         if (!isCancelled) {
           setLoading(false);
@@ -41,5 +43,5 @@ export function useInitializeOwnerProfile() {
     };
   }, [loading, user, initialized]);
 
-  return { ownerProfileId, loading };
+  return { petProfileId, ownerProfileId, loading };
 }

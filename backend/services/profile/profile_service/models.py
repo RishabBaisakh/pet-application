@@ -78,6 +78,15 @@ class PetProfile(models.Model):
     )
     is_private = models.BooleanField(default=False)
 
+    def is_profile_complete(self):
+        required_fields = [self.name, self.type]
+        return all(required_fields)
+
+    def save(self, *args, **kwargs):
+        if self.status == STATUS_ONBOARDING and self.is_profile_complete():
+            self.status = "ACTIVE"
+        super().save(*args, **kwargs)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

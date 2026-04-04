@@ -19,6 +19,6 @@ urlpatterns = [
         OnboardingStatusView.as_view(),
         name="onboarding-status",
     ),
-    path("api/profile/init_owner/", InitializeOwnerView.as_view()),
-    path("api/profile/init_pet/", InitializePetView.as_view()),
+    path("api/profile/init_owner_profile/", InitializeOwnerView.as_view()),
+    path("api/profile/init_pet_profile/", InitializePetView.as_view()),
 ]

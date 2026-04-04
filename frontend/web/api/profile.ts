@@ -1,6 +1,11 @@
 import {
+  InitOwnerProfileResponse,
+  InitPetProfileResponse,
+  OnboardingStatusResponse,
   UpdateOwnerProfileRequest,
   UpdateOwnerProfileResponse,
+  UpdatePetProfileRequest,
+  UpdatePetProfileResponse,
 } from "@/types/api/profile";
 import { createAPI } from "./axiosFactory";
 
@@ -28,7 +33,7 @@ export const profileService = createAPI("profile", {
   logout: () => profileClientRuntime.logout(),
 });
 
-export async function getOnboardingStatus() {
+export async function getOnboardingStatus(): Promise<OnboardingStatusResponse> {
   try {
     const res = await profileService.get("/onboarding-status/");
     return res.data; // { owner_profile_completed: boolean, pet_profile_completed: boolean }
@@ -37,32 +42,44 @@ export async function getOnboardingStatus() {
   }
 }
 
-export async function initializeOwnerProfile() {
+export async function initializeOwnerProfile(): Promise<InitOwnerProfileResponse> {
   try {
-    const res = await profileService.post("/init_owner/");
-    return res.data; // owner profile Id
+    const res = await profileService.post("/init_owner_profile/");
+    return res.data;
   } catch (err: unknown) {
     throw { detail: "Failed to initialize owner profile", error: err };
   }
 }
 
-export async function initializePetProfile() {
+export async function initializePetProfile(): Promise<InitPetProfileResponse> {
   try {
-    const res = await profileService.post("/init_pet/");
-    return res.data; // pet profile Id
+    const res = await profileService.post("/init_pet_profile/");
+    return res.data;
   } catch (err: unknown) {
     throw { detail: "Failed to initialize pet profile", error: err };
   }
 }
 
 export async function updateOwnerProfile(
-  ownerProfileId: string,
+  id: string,
   data: UpdateOwnerProfileRequest,
 ): Promise<UpdateOwnerProfileResponse> {
   try {
-    const res = await profileService.patch(`/owners/${ownerProfileId}/`, data);
+    const res = await profileService.patch(`/owners/${id}/`, data);
     return res.data;
   } catch (err: unknown) {
     throw { detail: "Failed to update owner profile", error: err };
+  }
+}
+
+export async function updatePetProfile(
+  id: string,
+  data: UpdatePetProfileRequest,
+): Promise<UpdatePetProfileResponse> {
+  try {
+    const res = await profileService.patch(`/pets/${id}/`, data);
+    return res.data;
+  } catch (err: unknown) {
+    throw { detail: "Failed to update pet profile", error: err };
   }
 }
