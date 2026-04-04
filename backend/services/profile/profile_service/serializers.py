@@ -15,7 +15,7 @@ class OwnerProfileSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("id", "user_id", "status", "created_at", "updated_at")
+        read_only_fields = ("id", "status", "created_at", "updated_at")
 
 
 class OwnerInitResponseSerializer(serializers.ModelSerializer):
@@ -29,6 +29,7 @@ class PetProfileSerializer(serializers.ModelSerializer):
         model = PetProfile
         fields = (
             "id",
+            "owner_profile_id",
             "name",
             "age",
             "type",
@@ -36,10 +37,18 @@ class PetProfileSerializer(serializers.ModelSerializer):
             "bio",
             "avatar_url",
             "status",
+            "city",
+            "province",
             "created_at",
             "updated_at",
         )
-        read_only_fields = ("id", "owner_profile", "status", "created_at", "updated_at")
+        read_only_fields = (
+            "id",
+            "owner_profile_id",
+            "status",
+            "created_at",
+            "updated_at",
+        )
 
 
 class PetInitResponseSerializer(serializers.ModelSerializer):

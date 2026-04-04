@@ -20,7 +20,6 @@ interface PetProfileFormProps {
 }
 
 export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onSubmit }: PetProfileFormProps) {
-  console.log("🚀 ~ CreatePetProfileForm ~ ownerProfileId:", ownerProfileId)
   const {
     register,
     handleSubmit,

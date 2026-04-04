@@ -1,5 +1,13 @@
 import axios from "axios";
 import { createAPI } from "./axiosFactory";
+import {
+  AuthResponse,
+  LoginRequest,
+  LoginResponse,
+  MeResponse,
+  RegisterRequest,
+  RefreshTokenResponse,
+} from "@/types/api/auth";
 
 interface AuthClientRuntime {
   getAccessToken: () => string | null;
@@ -25,11 +33,7 @@ const authService = createAPI("auth", {
   logout: () => authClientRuntime.logout(),
 });
 
-export async function register(data: {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}) {
+export async function register(data: RegisterRequest): Promise<AuthResponse> {
   try {
     const res = await authService.post("/register/", data);
     return res.data;
@@ -41,10 +45,10 @@ export async function register(data: {
   }
 }
 
-export async function login(data: { email: string; password: string }) {
+export async function login(data: LoginRequest): Promise<LoginResponse> {
   try {
     const res = await authService.post("/login/", data);
-    return res.data; // { user, access }
+    return res.data;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
       throw err.response?.data || { detail: "Unknown Axios error" };
@@ -53,10 +57,10 @@ export async function login(data: { email: string; password: string }) {
   }
 }
 
-export async function me() {
+export async function me(): Promise<MeResponse> {
   try {
     const res = await authService.get("/me/");
-    return res.data; // user object
+    return res.data;
   } catch (err: unknown) {
     if (axios.isAxiosError(err)) {
       throw err.response?.data || { detail: "Unauthorized" };
@@ -77,7 +81,7 @@ export async function logout() {
   }
 }
 
-export async function refreshAccessToken() {
+export async function refreshAccessToken(): Promise<RefreshTokenResponse | null> {
   try {
     const res = await authService.post("/token/refresh/");
     return res.data;

@@ -15,7 +15,6 @@ export default function ProtectedLayout({
 }) {
   const { user, initialized } = useAuth();
   const { isOnboardingCompleted, loading } = useOnboarding();
-  console.log("🚀 ~ ProtectedLayout ~ isOnboardingCompleted:", isOnboardingCompleted)
   const router = useRouter();
   const pathname = usePathname();
 
@@ -24,8 +23,12 @@ export default function ProtectedLayout({
 
     if (!user) {
       router.replace("/login");
-    } else if (!isOnboardingCompleted) {
-      router.replace("/create-profile/owner");
+    } else  {
+      if (!isOnboardingCompleted) {
+        router.replace("/create-profile/owner");
+      } else {
+        router.replace("/feeds");
+      }
     } 
   }, [
     user,

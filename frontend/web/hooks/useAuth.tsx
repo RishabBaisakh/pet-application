@@ -9,12 +9,12 @@ import {
   useRef,
 } from "react";
 import * as authApi from "@/api/auth";
+import * as profileApi from "@/api/profile";
 import { configureProfileClient } from "@/api/profile";
 import { configureMediaClient } from "@/api/media";
+import { User as BaseUser } from "@/types/models/user";
 
-interface User {
-  id: string;
-  email: string;
+interface User extends Pick<BaseUser, "id" | "email"> {
   ownerProfileCompleted: boolean;
   petProfileCompleted: boolean;
   profileStatusUnknown: boolean;
@@ -80,12 +80,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await authApi.login({ email, password });
       accessTokenRef.current = data.access;
       setAccessToken(data.access);
-      setUser(data.user);
-      return {
-        ownerProfileCompleted: data.user.ownerProfileCompleted,
-        petProfileCompleted: data.user.petProfileCompleted,
-        profileStatusUnknown: data.user.profileStatusUnknown,
-      };
+
+      let ownerProfileCompleted = false;
+      let petProfileCompleted = false;
+      let profileStatusUnknown = false;
+
+      try {
+        const status = await profileApi.getOnboardingStatus();
+        ownerProfileCompleted = status.ownerProfileCompleted;
+        petProfileCompleted = status.petProfileCompleted;
+      } catch {
+        profileStatusUnknown = true;
+      }
+
+      setUser({
+        ...data.user,
+        ownerProfileCompleted,
+        petProfileCompleted,
+        profileStatusUnknown,
+      });
+
+      return { ownerProfileCompleted, petProfileCompleted, profileStatusUnknown };
     } catch (err) {
       const error = err as { response?: { data?: { detail?: string } } };
       console.error("Login failed", err);
@@ -130,7 +145,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setAccessToken(refreshedAccessToken);
 
           const res = await authApi.me();
-          setUser(res);
+
+          let ownerProfileCompleted = false;
+          let petProfileCompleted = false;
+          let profileStatusUnknown = false;
+
+          try {
+            const status = await profileApi.getOnboardingStatus();
+            ownerProfileCompleted = status.ownerProfileCompleted;
+            petProfileCompleted = status.petProfileCompleted;
+          } catch {
+            profileStatusUnknown = true;
+          }
+
+          setUser({
+            id: res.id,
+            email: res.email,
+            ownerProfileCompleted,
+            petProfileCompleted,
+            profileStatusUnknown,
+          });
         } else {
           await clearAuthState();
           console.warn("No access token found during initialization");

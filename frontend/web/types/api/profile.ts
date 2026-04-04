@@ -1,21 +1,14 @@
-export interface UpdateOwnerProfileRequest {
-  firstName: string;
-  lastName: string;
-  bio?: string;
-  avatarUrl?: string;
-}
+import { OwnerProfile } from "../models/owner";
+import { PetProfile } from "../models/pet";
 
-export interface UpdateOwnerProfileResponse {
-  id: string;
-  firstName: string;
-  lastName: string;
-  bio?: string;
-  avatarUrl?: string;
-}
+export type UpdateOwnerProfileRequest = Omit<OwnerProfile, "id">;
+
+export type UpdateOwnerProfileResponse = OwnerProfile;
+
 export interface InitOwnerProfileResponse {
   id: string;
   status: string;
-}
+} 
 
 export interface InitPetProfileResponse {
   id: string;
@@ -24,29 +17,10 @@ export interface InitPetProfileResponse {
 }
 
 export interface OnboardingStatusResponse {
-  owner_profile_completed: boolean;
-  pet_profile_completed: boolean;
+  ownerProfileCompleted: boolean;
+  petProfileCompleted: boolean;
 }
 
-export interface UpdatePetProfileRequest {
-  name: string;
-  type: string;
-  age?: number;
-  breed?: string;
-  bio?: string;
-  avatarUrl?: string;
-  province?: string;
-  city?: string;
-}
+export type UpdatePetProfileRequest = Omit<PetProfile, "id" | "ownerProfileId">;
 
-export interface UpdatePetProfileResponse {
-  id: string;
-  name: string;
-  type: string;
-  age?: number;
-  breed?: string;
-  bio?: string;
-  avatarUrl?: string;
-  province?: string;
-  city?: string;
-}
+export type UpdatePetProfileResponse = PetProfile;
