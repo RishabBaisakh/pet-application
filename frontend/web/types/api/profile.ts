@@ -8,7 +8,7 @@ export type UpdateOwnerProfileResponse = OwnerProfile;
 export interface InitOwnerProfileResponse {
   id: string;
   status: string;
-} 
+}
 
 export interface InitPetProfileResponse {
   id: string;

@@ -12,6 +12,7 @@ import PetPlaceholderImage from "@/assets/images/pet-placeholder.png";
 import { PET_TYPES } from "@/constants/pet";
 import { CANADA_PROVINCES } from "@/constants/location";
 import ImageUploader from "../common/ImageUploader";
+import { useState } from "react";
 
 interface PetProfileFormProps {
   petProfileId: string;
@@ -19,7 +20,11 @@ interface PetProfileFormProps {
   onSubmit: (data: PetProfileFormValues) => void;
 }
 
-export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onSubmit }: PetProfileFormProps) {
+export default function CreatePetProfileForm({
+  petProfileId,
+  ownerProfileId,
+  onSubmit,
+}: PetProfileFormProps) {
   const {
     register,
     handleSubmit,
@@ -42,6 +47,7 @@ export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onS
   });
 
   const avatarUrl = watch("avatarUrl");
+  const [uploaderOpen, setUploaderOpen] = useState(false);
 
   const onImageUpload = (mediaUrl: string, mediaId: string) => {
     setValue("avatarUrl", mediaUrl, {
@@ -49,7 +55,8 @@ export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onS
       shouldDirty: true,
       shouldTouch: true,
     });
-  }
+    setUploaderOpen(false);
+  };
 
   return (
     <form
@@ -60,14 +67,18 @@ export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onS
           <Image
             src={avatarUrl || PetPlaceholderImage}
             alt="Profile Logo"
-            width={128}
-            height={128}
-            className="mb-4 mx-auto rounded-full border-3 border-gray-300 shadow-lg"
+            width={192}
+            height={192}
+            className="w-48 h-48 object-cover mb-4 mx-auto rounded-4xl border-3 border-gray-300 shadow-lg"
             priority
           />
-          <span className="absolute border-2 border-white bg-gray-200 rounded-full p-1 right-3 top-0 transform translate-x-1/2 translate-y-1/2 cursor-pointer hover:bg-gray-300">
-            <Icon name="PlusIcon" size={24} color="gray" />
-          </span>
+          {!avatarUrl && (
+            <span
+              onClick={() => setUploaderOpen(true)}
+              className="absolute border-2 border-white bg-gray-200 rounded-full p-1 right-3 top-0 transform translate-x-1/2 translate-y-1/2 cursor-pointer hover:bg-gray-300">
+              <Icon name="PlusIcon" size={24} color="gray" />
+            </span>
+          )}
         </div>
       </div>
       <ImageUploader
@@ -75,6 +86,8 @@ export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onS
         onUploaded={onImageUpload}
         ownerProfileId={ownerProfileId}
         petProfileId={petProfileId}
+        open={uploaderOpen}
+        onRequestClose={() => setUploaderOpen(false)}
       />
       <div>
         <label className="block font-bold mb-1">Name</label>
@@ -106,7 +119,7 @@ export default function CreatePetProfileForm({ petProfileId, ownerProfileId, onS
           {...register("breed")}
         />
       </div>
-      
+
       <div>
         <label className="block font-bold mb-1">Age</label>
         <input

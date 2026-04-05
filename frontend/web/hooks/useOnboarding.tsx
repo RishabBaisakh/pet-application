@@ -11,7 +11,8 @@ export default function useOnboarding() {
     useState(false);
   const [isPetOnboardingCompleted, setIsPetOnboardingCompleted] =
     useState(false);
-  const isOnboardingCompleted = isOwnerOnboardingCompleted || isPetOnboardingCompleted;
+  const isOnboardingCompleted =
+    isOwnerOnboardingCompleted && isPetOnboardingCompleted;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,5 +48,10 @@ export default function useOnboarding() {
     };
   }, [initialized, user]);
 
-  return { isOwnerOnboardingCompleted, isPetOnboardingCompleted, isOnboardingCompleted, loading };
+  return {
+    isOwnerOnboardingCompleted,
+    isPetOnboardingCompleted,
+    isOnboardingCompleted,
+    loading,
+  };
 }

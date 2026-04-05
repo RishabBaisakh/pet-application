@@ -9,6 +9,7 @@ import { useForm, useWatch } from "react-hook-form";
 import OwnerPlaceholderImage from "@/assets/images/owner-placeholder.jpg";
 import Icon from "../common/Icon";
 import ImageUploader from "../common/ImageUploader";
+import { useState } from "react";
 
 interface CreateOwnerFormProps {
   ownerProfileId: string;
@@ -35,6 +36,7 @@ export default function CreateOwnerProfileForm({
     resolver: zodResolver(ownerProfileSchema),
     mode: "onChange",
   });
+  const [uploaderOpen, setUploaderOpen] = useState(false);
 
   const avatarUrl = useWatch({
     control,
@@ -47,6 +49,7 @@ export default function CreateOwnerProfileForm({
       shouldDirty: true,
       shouldTouch: true,
     });
+    setUploaderOpen(false);
   }
   return (
     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
@@ -55,20 +58,26 @@ export default function CreateOwnerProfileForm({
           <Image
             src={avatarUrl || OwnerPlaceholderImage}
             alt="Profile Logo"
-            width={128}
-            height={128}
-            className="mb-4 mx-auto rounded-full border-3 border-gray-300 shadow-lg"
+            width={192}
+            height={192}
+            className="w-48 h-48 object-cover mb-4 mx-auto rounded-4xl border-3 border-gray-300 shadow-lg"
             priority
           />
-          <span className="absolute border-2 border-white bg-gray-200 rounded-full p-1 right-3 top-0 transform translate-x-1/2 translate-y-1/2 cursor-pointer hover:bg-gray-300">
-            <Icon name="PlusIcon" size={24} color="gray" />
-          </span>
+          {!avatarUrl && (
+            <span
+              onClick={() => setUploaderOpen((prev) => !prev)}
+              className="absolute border-2 border-white bg-gray-200 rounded-full p-1 right-3 top-0 transform translate-x-1/2 translate-y-1/2 cursor-pointer hover:bg-gray-300">
+              <Icon name="PlusIcon" size={24} color="gray" />
+            </span>
+          )}
         </div>
       </div>
       <ImageUploader
         serviceType="PROFILE"
         onUploaded={onImageUpload}
         ownerProfileId={ownerProfileId}
+        open={uploaderOpen}
+        onRequestClose={() => setUploaderOpen(false)}
       />
       <div>
         <label className="block font-bold mb-1">First name</label>

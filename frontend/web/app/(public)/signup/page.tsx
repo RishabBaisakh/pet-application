@@ -4,13 +4,16 @@ import Link from "next/link";
 import { SignupFormValues } from "@/schemas/auth-schema";
 import { useAuth } from "@/hooks/useAuth";
 import SignupForm from "@/components/forms/SignupForm";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const { register } = useAuth();
+  const router = useRouter();
 
   const onSubmit = async (data: SignupFormValues) => {
     try {
       await register(data.email, data.password, data.confirmPassword);
+      router.push("/login");
     } catch (err) {
       console.error("Network or server error", err);
       // TODO: Show user-friendly error message on the UI - Form Error

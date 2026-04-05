@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import Uppy from "@uppy/core";
 import ImageEditor from "@uppy/image-editor";
 import AwsS3 from "@uppy/aws-s3";
-import UppyDashboard from "@uppy/react/dashboard";
 
 import "@uppy/core/css/style.css";
 import "@uppy/dashboard/css/style.css";
 import "@uppy/image-editor/css/style.css";
 import { presignUploadUrl } from "@/api/media";
+import DashboardModal from "@uppy/react/dashboard-modal";
 
 type UppyMeta = {
   mediaId?: string;
@@ -20,6 +20,8 @@ type Props = {
   ownerProfileId: string;
   petProfileId?: string;
   serviceType: "PROFILE" | "ACCOUNT" | "DOCUMENTS ";
+  open: boolean;
+  onRequestClose: () => void;
   onUploaded: (url: string, mediaId: string) => void;
 };
 
@@ -27,9 +29,12 @@ export default function ImageUploader({
   ownerProfileId,
   petProfileId,
   serviceType,
+  open,
+  onRequestClose,
   onUploaded,
 }: Props) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const onUploadedRef = useRef(onUploaded);
+  onUploadedRef.current = onUploaded;
 
   const uppy = useMemo(() => {
     const u = new Uppy<UppyMeta>({
@@ -78,35 +83,20 @@ export default function ImageUploader({
 
       const { mediaId, fileUrl } = file.meta;
       if (typeof fileUrl === "string" && typeof mediaId === "string") {
-        onUploaded?.(fileUrl, mediaId);
+        onUploadedRef.current?.(fileUrl, mediaId);
       }
     });
 
     return u;
-  }, [ownerProfileId, petProfileId, serviceType, onUploaded]);
-
-  // TODO: Cleanup uppy instance on unmount to prevent memory leaks
-  // useEffect(() => {
-  //   return () => {
-  //     uppy.destroy();
-  //   };
-  // }, [uppy]);
+  }, [ownerProfileId, petProfileId, serviceType]);
 
   return (
-    <div className="space-y-3">
-      <UppyDashboard
-        uppy={uppy}
-        proudlyDisplayPoweredByUppy={false}
-        hideUploadButton
-        height={350}
-        note="Images only, up to 5MB"
-      />
-      <button
-        type="button"
-        onClick={() => void uppy.upload()}
-        className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
-        {"Upload image"}
-      </button>
-    </div>
+    <DashboardModal
+      uppy={uppy}
+      proudlyDisplayPoweredByUppy={false}
+      open={open}
+      note="Images only, up to 5MB"
+      onRequestClose={onRequestClose}
+    />
   );
 }
