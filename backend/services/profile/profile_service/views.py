@@ -1,4 +1,5 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from .models import OwnerProfile, PetProfile
 from .serializers import (
@@ -47,21 +48,30 @@ class InitializeOwnerView(APIView):
 
 
 class OwnerProfileViewSet(viewsets.ModelViewSet):
-    queryset = OwnerProfile.objects.all()
     serializer_class = OwnerProfileSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ["get", "patch", "head", "options"]
 
-    def patch(self, request, *args, **kwargs):
-        owner_profile = self.get_object()
-        if owner_profile.user_id != request.user.id:
+    def get_queryset(self):
+        return OwnerProfile.objects.filter(user_id=self.request.user.id)
+
+    @action(detail=False, methods=["get", "patch"], url_path="me")
+    def me(self, request):
+        owner_profile = OwnerProfile.objects.filter(user_id=request.user.id).first()
+        if not owner_profile:
             return Response(
-                {"error": "You do not have permission to edit this profile."},
-                status=403,
+                {"error": "Owner profile not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
-        data = self.get_serializer(owner_profile, data=request.data, partial=True)
-        data.is_valid(raise_exception=True)
-        return super().patch(request, *args, **kwargs)
+        if request.method == "PATCH":
+            serializer = self.get_serializer(
+                owner_profile, data=request.data, partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(self.get_serializer(owner_profile).data)
 
 
 class InitializePetView(APIView):
@@ -85,18 +95,26 @@ class InitializePetView(APIView):
 
 
 class PetProfileViewSet(viewsets.ModelViewSet):
-    queryset = PetProfile.objects.all()
     serializer_class = PetProfileSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
-    def patch(self, request, *args, **kwargs):
-        pet_profile = self.get_object()
-        if pet_profile.owner_profile.user_id != request.user.id:
-            return Response(
-                {"error": "You do not have permission to edit this profile."},
-                status=403,
+    def get_queryset(self):
+        owner_profile = OwnerProfile.objects.filter(
+            user_id=self.request.user.id
+        ).first()
+        if not owner_profile:
+            return PetProfile.objects.none()
+        return PetProfile.objects.filter(owner_profile=owner_profile)
+
+    def perform_create(self, serializer):
+        owner_profile = OwnerProfile.objects.filter(
+            user_id=self.request.user.id
+        ).first()
+        if not owner_profile:
+            from rest_framework.exceptions import ValidationError
+
+            raise ValidationError(
+                "Owner profile not found. Please create an owner profile first."
             )
-
-        data = self.get_serializer(pet_profile, data=request.data, partial=True)
-        data.is_valid(raise_exception=True)
-        return super().patch(request, *args, **kwargs)
+        serializer.save(owner_profile=owner_profile)

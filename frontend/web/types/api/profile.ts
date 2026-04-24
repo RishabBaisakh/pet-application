@@ -24,3 +24,7 @@ export interface OnboardingStatusResponse {
 export type UpdatePetProfileRequest = Omit<PetProfile, "id" | "ownerProfileId">;
 
 export type UpdatePetProfileResponse = PetProfile;
+
+export type CreatePetRequest = Omit<PetProfile, "id" | "ownerProfileId">;
+
+export type CreatePetResponse = PetProfile;

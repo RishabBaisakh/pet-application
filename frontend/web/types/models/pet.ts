@@ -6,7 +6,10 @@ export interface PetProfile {
   age?: number;
   breed?: string;
   bio?: string;
+  gender?: string;
   avatarUrl?: string;
-  province?: string;
   city?: string;
+  province?: string;
+  country?: string;
+  isPrivate?: boolean;
 }

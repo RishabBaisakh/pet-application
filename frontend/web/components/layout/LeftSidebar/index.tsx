@@ -29,9 +29,9 @@ export default function LeftSidebar() {
       <Image
         src={PetPlaceholder}
         alt="Profile Logo"
-        width={128}
-        height={128}
-        className="mb-4 mx-auto rounded-full border-2 border-gray-400 shadow-lg"
+        width={192}
+        height={192}
+        className="w-48 h-48 object-cover mb-4 mx-auto rounded-4xl border-2 border-gray-400 shadow-lg"
         priority
       />
       <p className="text-center font-bold text-xl">Pet Name</p>

@@ -35,10 +35,13 @@ class PetProfileSerializer(serializers.ModelSerializer):
             "type",
             "breed",
             "bio",
+            "gender",
             "avatar_url",
             "status",
             "city",
             "province",
+            "country",
+            "is_private",
             "created_at",
             "updated_at",
         )
