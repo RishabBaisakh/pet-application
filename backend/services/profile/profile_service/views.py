@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from .models import OwnerProfile, PetProfile
 from .serializers import (
@@ -112,8 +113,6 @@ class PetProfileViewSet(viewsets.ModelViewSet):
             user_id=self.request.user.id
         ).first()
         if not owner_profile:
-            from rest_framework.exceptions import ValidationError
-
             raise ValidationError(
                 "Owner profile not found. Please create an owner profile first."
             )
