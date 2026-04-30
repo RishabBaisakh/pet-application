@@ -55,6 +55,21 @@ services:
     depends_on:
       - db
 
+  posts-service:
+    build:
+      context: ./backend/services/posts
+    container_name: posts-service
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./backend/services/posts:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    depends_on:
+      - db
+
   frontend:
     build:
       context: ./frontend/web
