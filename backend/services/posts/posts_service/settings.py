@@ -71,6 +71,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
     ),
+    "PAGE_SIZE": 20,
 }
 
 LANGUAGE_CODE = "en-us"

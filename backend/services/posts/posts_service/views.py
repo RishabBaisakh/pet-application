@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from constants import STATUS_ACTIVE, STATUS_DELETED
 from .models import Post, PostMedia
+from .pagination import FeedCursorPagination
 from .serializers import CreatePostSerializer, PostSerializer
 
 
@@ -12,14 +13,11 @@ class PostListCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        owner_profile_id = request.auth.get("user_id")
-        posts = (
-            Post.objects.filter(status=STATUS_ACTIVE)
-            .select_related()
-            .prefetch_related("media")
-        )
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        posts = Post.objects.filter(status=STATUS_ACTIVE).prefetch_related("media")
+        paginator = FeedCursorPagination()
+        page = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = CreatePostSerializer(data=request.data)

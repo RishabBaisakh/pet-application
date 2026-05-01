@@ -12,6 +12,7 @@ import * as authApi from "@/api/auth";
 import * as profileApi from "@/api/profile";
 import { configureProfileClient } from "@/api/profile";
 import { configureMediaClient } from "@/api/media";
+import { configurePostsClient } from "@/api/posts";
 import { User as BaseUser } from "@/types/models/user";
 
 interface User extends Pick<BaseUser, "id" | "email"> {
@@ -73,6 +74,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       getAccessToken: () => accessTokenRef.current,
       logout: clearAuthState,
     });
+
+    configurePostsClient({
+      getAccessToken: () => accessTokenRef.current,
+      logout: clearAuthState,
+    });
   }, [clearAuthState]);
 
   const login = async (email: string, password: string) => {
@@ -100,7 +106,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         profileStatusUnknown,
       });
 
-      return { ownerProfileCompleted, petProfileCompleted, profileStatusUnknown };
+      return {
+        ownerProfileCompleted,
+        petProfileCompleted,
+        profileStatusUnknown,
+      };
     } catch (err) {
       const error = err as { response?: { data?: { detail?: string } } };
       console.error("Login failed", err);

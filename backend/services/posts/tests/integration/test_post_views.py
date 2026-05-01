@@ -52,18 +52,69 @@ class TestPostFeedView:
         PostFactory(owner_profile_id=owner_profile_id)
         response = authenticated_client.get("/api/posts/feed/")
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.json()) >= 2
+        assert len(response.json()["results"]) >= 2
 
     def test_feed_excludes_deleted_posts(self, authenticated_client, owner_profile_id):
         post = PostFactory(owner_profile_id=owner_profile_id)
         post.soft_delete()
         response = authenticated_client.get("/api/posts/feed/")
-        ids = [p["id"] for p in response.json()]
+        ids = [p["id"] for p in response.json()["results"]]
         assert str(post.id) not in ids
 
     def test_feed_requires_authentication(self, api_client):
         response = api_client.get("/api/posts/feed/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_feed_response_has_pagination_shape(self, authenticated_client):
+        response = authenticated_client.get("/api/posts/feed/")
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert "results" in data
+        assert "next" in data
+        assert "previous" in data
+
+    def test_feed_next_cursor_is_null_when_results_fit_in_one_page(
+        self, authenticated_client, owner_profile_id
+    ):
+        PostFactory.create_batch(3, owner_profile_id=owner_profile_id)
+        response = authenticated_client.get("/api/posts/feed/")
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["next"] is None
+
+    def test_feed_next_cursor_present_when_results_exceed_page_size(
+        self, authenticated_client, owner_profile_id
+    ):
+        PostFactory.create_batch(21, owner_profile_id=owner_profile_id)
+        response = authenticated_client.get("/api/posts/feed/")
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        assert len(data["results"]) == 20
+        assert data["next"] is not None
+
+    def test_feed_cursor_advances_to_next_page(
+        self, authenticated_client, owner_profile_id
+    ):
+        PostFactory.create_batch(21, owner_profile_id=owner_profile_id)
+        first_response = authenticated_client.get("/api/posts/feed/")
+        assert first_response.status_code == status.HTTP_200_OK
+        first_data = first_response.json()
+        assert first_data["next"] is not None
+
+        # Extract the cursor query param from the `next` URL and request page 2
+        from urllib.parse import urlparse, parse_qs
+
+        next_url = first_data["next"]
+        cursor = parse_qs(urlparse(next_url).query)["cursor"][0]
+
+        second_response = authenticated_client.get(f"/api/posts/feed/?cursor={cursor}")
+        assert second_response.status_code == status.HTTP_200_OK
+        second_data = second_response.json()
+        assert len(second_data["results"]) == 1
+
+        # No overlap between pages
+        first_ids = {p["id"] for p in first_data["results"]}
+        second_ids = {p["id"] for p in second_data["results"]}
+        assert first_ids.isdisjoint(second_ids)
 
 
 class TestPostDeleteView:
