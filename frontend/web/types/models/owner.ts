@@ -4,4 +4,7 @@ export interface OwnerProfile {
   lastName: string;
   bio?: string;
   avatarUrl?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 }

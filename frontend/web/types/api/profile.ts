@@ -1,7 +1,10 @@
 import { OwnerProfile } from "../models/owner";
 import { PetProfile } from "../models/pet";
 
-export type UpdateOwnerProfileRequest = Omit<OwnerProfile, "id">;
+export type UpdateOwnerProfileRequest = Omit<
+  OwnerProfile,
+  "id" | "status" | "createdAt" | "updatedAt"
+>;
 
 export type UpdateOwnerProfileResponse = OwnerProfile;
 
