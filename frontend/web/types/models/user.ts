@@ -3,4 +3,6 @@ export interface User {
   email: string;
   role: string;
   isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
