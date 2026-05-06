@@ -106,6 +106,15 @@ export async function getPetProfiles(): Promise<PetProfile[]> {
   }
 }
 
+export async function getPetProfile(id: string): Promise<PetProfile> {
+  try {
+    const res = await profileService.get(`/pets/${id}/`);
+    return res.data;
+  } catch (err: unknown) {
+    throw { detail: "Failed to fetch pet profile", error: err };
+  }
+}
+
 export async function createPet(
   data: CreatePetRequest,
 ): Promise<CreatePetResponse> {

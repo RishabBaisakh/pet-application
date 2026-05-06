@@ -12,4 +12,7 @@ export interface PetProfile {
   province?: string;
   country?: string;
   isPrivate?: boolean;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
 }
