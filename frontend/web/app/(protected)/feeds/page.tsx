@@ -6,7 +6,8 @@ import { useState } from "react";
 
 export default function FeedPage() {
   const [feedsFilter, setFeedsFilter] = useState("recent");
-  const { posts, isLoading, isLoadingMore, hasMore, loadMore } = useFeed();
+  const { posts, isLoading, isLoadingMore, hasMore, loadMore, prependPost } =
+    useFeed();
 
   const handleFeedsFilterChange = (filter: string) => {
     setFeedsFilter(filter);
@@ -44,7 +45,7 @@ export default function FeedPage() {
         </div>
       </div>
 
-      <PostComposer />
+      <PostComposer onPostCreated={prependPost} />
 
       <div className="mt-6 space-y-4">
         {isLoading ? (

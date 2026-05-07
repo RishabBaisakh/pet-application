@@ -2,19 +2,26 @@ import Image from "next/image";
 import { Dialog } from "radix-ui";
 import OwnerPlaceholder from "@/assets/images/owner-placeholder.jpg";
 import { Share2 } from "@deemlol/next-icons";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import EmojiPickerOverlay from "@/components/common/EmojiPickerOverlay";
 
 interface CreatePostContentProps {
   openVisibilityDialog: () => void;
+  text: string;
+  setText: (t: string) => void;
+  onSubmit: () => void;
+  isSubmitting: boolean;
 }
 
 export default function CreatePostContent({
   openVisibilityDialog,
+  text,
+  setText,
+  onSubmit,
+  isSubmitting,
 }: CreatePostContentProps) {
   // TODO: Add Media upload and preview functionality
 
-  const [text, setText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   return (
@@ -59,8 +66,11 @@ export default function CreatePostContent({
               Cancel
             </button>
           </Dialog.Close>
-          <button className="px-4 py-2 rounded-md bg-orange-400 text-white hover:bg-orange-500">
-            Post
+          <button
+            onClick={onSubmit}
+            disabled={!text.trim() || isSubmitting}
+            className="px-4 py-2 rounded-md bg-orange-400 text-white hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed">
+            {isSubmitting ? "Posting…" : "Post"}
           </button>
         </div>
       </div>

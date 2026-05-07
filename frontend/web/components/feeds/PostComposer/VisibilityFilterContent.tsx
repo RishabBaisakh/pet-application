@@ -1,19 +1,21 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { Globe, Lock, Users } from "@deemlol/next-icons";
-import { JSX, useState } from "react";
+import { JSX } from "react";
 import clsx from "clsx";
 
-type VisibilityOption = "public" | "friends" | "onlyMe";
+export type VisibilityOption = "public" | "friends" | "onlyMe";
 
 interface VisibilityFilterContentProps {
   closeVisibilityDialog: () => void;
+  selected: VisibilityOption;
+  onSelect: (v: VisibilityOption) => void;
 }
 
 export default function VisibilityFilterContent({
   closeVisibilityDialog,
+  selected,
+  onSelect,
 }: VisibilityFilterContentProps) {
-  const [selected, setSelected] = useState<VisibilityOption>("public");
-
   const options: {
     label: string;
     value: VisibilityOption;
@@ -39,7 +41,7 @@ export default function VisibilityFilterContent({
           <button
             key={option.value}
             type="button"
-            onClick={() => setSelected(option.value)}
+            onClick={() => onSelect(option.value)}
             className={clsx(
               "flex items-center gap-3 px-4 py-2 rounded-md cursor-pointer hover:bg-gray-200",
               selected === option.value &&

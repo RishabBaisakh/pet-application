@@ -5,3 +5,9 @@ export interface PaginatedFeedResponse {
   previous: string | null;
   results: Post[];
 }
+
+export interface CreatePostPayload {
+  content: string;
+  visibility: "PUBLIC" | "FRIENDS" | "PRIVATE";
+  mediaFileIds?: string[];
+}

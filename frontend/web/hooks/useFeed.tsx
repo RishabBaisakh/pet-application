@@ -56,12 +56,17 @@ export default function useFeed() {
     }
   }, [nextCursor, isLoadingMore]);
 
+  const prependPost = useCallback((post: Post) => {
+    setPosts((prev) => [post, ...prev]);
+  }, []);
+
   return {
     posts,
     isLoading,
     isLoadingMore,
     hasMore: nextCursor !== null,
     loadMore,
+    prependPost,
   };
 }
 
