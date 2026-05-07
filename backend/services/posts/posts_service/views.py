@@ -1,10 +1,11 @@
+from django.db.models import Count
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from constants import STATUS_ACTIVE, STATUS_DELETED
-from .models import Post, PostMedia
+from .models import Post, PostLike, PostMedia
 from .pagination import FeedCursorPagination
 from .serializers import CreatePostSerializer, PostSerializer
 
@@ -13,10 +14,26 @@ class PostListCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        posts = Post.objects.filter(status=STATUS_ACTIVE).prefetch_related("media")
+        owner_profile_id = request.auth.get("user_id")
+        posts = (
+            Post.objects.filter(status=STATUS_ACTIVE)
+            .annotate(like_count=Count("likes"))
+            .prefetch_related("media")
+        )
         paginator = FeedCursorPagination()
         page = paginator.paginate_queryset(posts, request)
-        serializer = PostSerializer(page, many=True)
+
+        post_ids = [p.id for p in page]
+        liked_post_ids = set(
+            PostLike.objects.filter(
+                post_id__in=post_ids,
+                owner_profile_id=owner_profile_id,
+            ).values_list("post_id", flat=True)
+        )
+
+        serializer = PostSerializer(
+            page, many=True, context={"liked_post_ids": liked_post_ids}
+        )
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
@@ -61,4 +78,33 @@ class PostDetailView(APIView):
             return Response({"detail": "Forbidden."}, status=status.HTTP_403_FORBIDDEN)
 
         post.soft_delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PostLikeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, post_id):
+        owner_profile_id = request.auth.get("user_id")
+        try:
+            post = Post.objects.get(id=post_id, status=STATUS_ACTIVE)
+        except Post.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        _, created = PostLike.objects.get_or_create(
+            post=post, owner_profile_id=owner_profile_id
+        )
+        if not created:
+            return Response(
+                {"detail": "Already liked."}, status=status.HTTP_409_CONFLICT
+            )
+        return Response(status=status.HTTP_201_CREATED)
+
+    def delete(self, request, post_id):
+        owner_profile_id = request.auth.get("user_id")
+        deleted, _ = PostLike.objects.filter(
+            post_id=post_id, owner_profile_id=owner_profile_id
+        ).delete()
+        if not deleted:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_204_NO_CONTENT)

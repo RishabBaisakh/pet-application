@@ -48,3 +48,14 @@ class PostMedia(models.Model):
     class Meta:
         app_label = "posts_service"
         ordering = ["order"]
+
+
+class PostLike(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
+    owner_profile_id = models.UUIDField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = "posts_service"
+        unique_together = [("post", "owner_profile_id")]

@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.urls import path
 
-from .views import PostDetailView, PostListCreateView
+from .views import PostDetailView, PostLikeView, PostListCreateView
 
 
 def health(request):
@@ -13,4 +13,5 @@ urlpatterns = [
     path("api/posts/", PostListCreateView.as_view(), name="post-list-create"),
     path("api/posts/feed/", PostListCreateView.as_view(), name="post-feed"),
     path("api/posts/<uuid:post_id>/", PostDetailView.as_view(), name="post-detail"),
+    path("api/posts/<uuid:post_id>/like/", PostLikeView.as_view(), name="post-like"),
 ]

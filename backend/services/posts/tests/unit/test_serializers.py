@@ -14,14 +14,14 @@ class TestCreatePostSerializer:
         assert s.is_valid(), s.errors
 
     def test_valid_with_media_only(self):
-        s = CreatePostSerializer(data={"mediaFileIds": [str(uuid.uuid4())]})
+        s = CreatePostSerializer(data={"media_file_ids": [str(uuid.uuid4())]})
         assert s.is_valid(), s.errors
 
     def test_valid_with_content_and_media(self):
         s = CreatePostSerializer(
             data={
                 "content": "Hello",
-                "mediaFileIds": [str(uuid.uuid4())],
+                "media_file_ids": [str(uuid.uuid4())],
             }
         )
         assert s.is_valid(), s.errors

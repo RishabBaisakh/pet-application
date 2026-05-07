@@ -11,6 +11,8 @@ class PostMediaSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     media = PostMediaSerializer(many=True, read_only=True)
+    like_count = serializers.SerializerMethodField()
+    is_liked_by_me = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -22,10 +24,21 @@ class PostSerializer(serializers.ModelSerializer):
             "visibility",
             "status",
             "media",
+            "like_count",
+            "is_liked_by_me",
             "created_at",
             "updated_at",
         ]
         read_only_fields = ["id", "status", "created_at", "updated_at"]
+
+    def get_like_count(self, obj):
+        if hasattr(obj, "like_count"):
+            return obj.like_count
+        return obj.likes.count()
+
+    def get_is_liked_by_me(self, obj):
+        liked_ids = self.context.get("liked_post_ids", set())
+        return obj.id in liked_ids
 
 
 class CreatePostSerializer(serializers.Serializer):
